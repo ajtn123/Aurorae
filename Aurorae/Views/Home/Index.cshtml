@@ -1,8 +1,37 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "主页";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<h1 class="display-4">你好。</h1>
+
+<div class="modules">
+    <div class="module card">
+        <div class="card-body">
+            <pre id="datetime" class="m-0"></pre>
+        </div>
+    </div>
 </div>
+
+@section Scripts {
+    <script>
+        const datetime = document.getElementById('datetime')
+        function updateDatetime() {
+            const dt = new Date();
+            datetime.textContent = JSON.stringify({
+                full: dt.toLocaleString(),
+                UTC: dt.toJSON(),
+                timestamp: dt.valueOf(),
+                year: dt.getFullYear(),
+                month: dt.getMonth() + 1,
+                date: dt.getDate(),
+                day: dt.getDay(),
+                hour: dt.getHours(),
+                minute: dt.getMinutes(),
+                second: dt.getSeconds()
+            }, null, 2);
+        }
+
+        updateDatetime();
+        setInterval(updateDatetime, 1000)
+    </script>
+}

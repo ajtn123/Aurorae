@@ -1,0 +1,35 @@
+@using Aurorae.Models.Gallery
+@model FileViewModel
+@{
+    ViewData["Title"] = $"图库 - {Model.FileInfo.Name}";
+    ViewData["Header"] = $"图库/{Model.ItemPath}";
+    var (prev, parent, next) = Model.GetNeighbors();
+}
+
+<h1>@ViewData["Header"]</h1>
+
+<div class="list-group list-group-horizontal-sm mb-2">
+    @if (prev != null)
+    {
+        <a class="list-group-item list-group-item-action" href="/gallery/@prev.ItemPath">
+            <i class="bi bi-chevron-left"></i> @prev.FileInfo.Name
+        </a>
+    }
+    @if (parent != null)
+    {
+        <a class="list-group-item list-group-item-action" href="/gallery/@parent.ItemPath">
+            <i class="bi bi-chevron-bar-up"></i> @parent.DirectoryInfo.Name
+        </a>
+    }
+    @if (next != null)
+    {
+        <a class="list-group-item list-group-item-action" href="/gallery/@next.ItemPath">
+            <i class="bi bi-chevron-right"></i> @next.FileInfo.Name
+        </a>
+    }
+</div>
+
+@if (Model.IsImage)
+{
+    <img src="/resources/images/@Model.ItemPath" class="image" />
+}

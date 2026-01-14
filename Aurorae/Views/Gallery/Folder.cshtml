@@ -1,0 +1,51 @@
+@using Aurorae.Models.Gallery
+@model FolderViewModel
+@{
+    ViewData["Title"] = $"图库 - {Model.DirectoryInfo.Name}";
+    ViewData["Header"] = Model.IsRoot ? "图库" : $"图库/{Model.ItemPath}";
+    var (prev, parent, next) = Model.GetNeighbors();
+}
+
+<h1>@ViewData["Header"]</h1>
+
+@if (!Model.IsRoot)
+{
+    <div class="list-group list-group-horizontal-sm mb-2">
+        @if (prev != null)
+        {
+            <a class="list-group-item list-group-item-action" href="/gallery/@prev.ItemPath">
+                <i class="bi bi-chevron-left"></i> @prev.DirectoryInfo.Name
+            </a>
+        }
+        @if (parent != null)
+        {
+            <a class="list-group-item list-group-item-action" href="/gallery/@parent.ItemPath">
+                <i class="bi bi-chevron-bar-up"></i> @parent.DirectoryInfo.Name
+            </a>
+        }
+        @if (next != null)
+        {
+            <a class="list-group-item list-group-item-action" href="/gallery/@next.ItemPath">
+                <i class="bi bi-chevron-right"></i> @next.DirectoryInfo.Name
+            </a>
+        }
+    </div>
+}
+
+<div class="list-group mb-2">
+    @foreach (FolderViewModel folder in Model.Folders)
+    {
+        <a class="list-group-item list-group-item-action" href="/gallery/@folder.ItemPath">
+            <i class="bi bi-folder2"></i> @folder.DirectoryInfo.Name
+        </a>
+    }
+</div>
+
+<div class="list-group mb-2">
+    @foreach (FileViewModel file in Model.Files)
+    {
+        <a class="list-group-item list-group-item-action" href="/gallery/@file.ItemPath">
+            <i class="bi bi-@file.IconName"></i> @file.FileInfo.Name
+        </a>
+    }
+</div>
