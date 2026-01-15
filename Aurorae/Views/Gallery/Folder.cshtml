@@ -4,9 +4,21 @@
     ViewData["Title"] = $"图库 - {Model.DirectoryInfo.Name}";
     ViewData["Header"] = Model.IsRoot ? "图库" : $"图库/{Model.ItemPath}";
     var (prev, parent, next) = Model.GetNeighbors();
+    var folderCount = Model.FolderPaths.Count();
+    var fileCount = Model.FilePaths.Count();
 }
 
-<h1>@ViewData["Header"]</h1>
+<h1>
+    @ViewData["Header"]
+    @if (folderCount != 0)
+    {
+        <span class="badge text-bg-secondary p-2 align-bottom">路径 @folderCount</span>
+    }
+    @if (fileCount != 0)
+    {
+        <span class="badge text-bg-secondary p-2 align-bottom">文件 @fileCount</span>
+    }
+</h1>
 
 @if (!Model.IsRoot)
 {
