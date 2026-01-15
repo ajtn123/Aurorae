@@ -1,5 +1,3 @@
-using Aurorae.Utils;
-
 namespace Aurorae.Models.Gallery;
 
 public class ItemViewModel

@@ -1,7 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using Aurorae.Models;
-using Aurorae.Utils;
-using System.Net.Mime;
 
 namespace Aurorae.Controllers;
 
@@ -15,10 +12,21 @@ public class ResourceController : Controller
 
         var path = Path.Combine(LocalPath.Gallery, name);
         var file = new FileInfo(path);
-        if (file.Exists)
-            return File(file.OpenRead(), GetContentType(file.Name));
-        else
+        if (!file.Exists)
             return NotFound();
+        else
+        {
+            var etag = $"{file.LastWriteTimeUtc.ToBinary()}-{file.Length}";
+
+            if (Request.Headers.IfNoneMatch.Contains(etag))
+            {
+                return StatusCode(StatusCodes.Status304NotModified);
+            }
+
+            Response.Headers.ETag = etag;
+
+            return File(file.OpenRead(), GetContentType(file.Name));
+        }
     }
 
     public static string GetContentType(string fileName) => MimeMapping.MimeUtility.GetMimeMapping(fileName);

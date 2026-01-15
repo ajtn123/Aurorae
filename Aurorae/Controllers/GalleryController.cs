@@ -1,15 +1,12 @@
-using System.Diagnostics;
-using Microsoft.AspNetCore.Mvc;
-using Aurorae.Models;
 using Aurorae.Models.Gallery;
-using Aurorae.Utils;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Aurorae.Controllers;
 
 public class GalleryController : Controller
 {
     [HttpGet("/gallery/{*name}")]
-    public IActionResult Itme(string name)
+    public IActionResult Item(string name)
     {
         if (string.IsNullOrWhiteSpace(name))
             return View("Folder", new FolderViewModel(LocalPath.Gallery));
