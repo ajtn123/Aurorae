@@ -73,10 +73,9 @@
         @foreach (FileViewModel file in files.Where(x => x.IsImage))
         {
             <a href="/gallery/@file.ItemPath">
-                <div class="card text-bg-dark border-0">
-                    <img src="/resources/thumbnails/@file.ItemPath" class="card-img"
-                         loading="lazy" height="240" width="400"
-                         onload="this.removeAttribute('width')">
+                <div class="card border-0">
+                    <img src="/resources/thumbnails/@file.ItemPath" class="card-img loading"
+                         loading="lazy" height="240" onload="this.classList.remove('loading')">
                     <div class="card-img-overlay hover-only">
                         <h5 class="card-title p-1 bg-dark bg-opacity-50 rounded">@file.FileInfo.Name</h5>
                     </div>
