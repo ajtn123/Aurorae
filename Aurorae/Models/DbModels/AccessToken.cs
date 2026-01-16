@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace Aurorae.Models;
+namespace Aurorae.Models.DbModels;
 
 [PrimaryKey(nameof(Token))]
 public class AccessToken

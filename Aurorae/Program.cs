@@ -1,14 +1,16 @@
+global using Aurorae.Services;
 global using Aurorae.Utils;
+using Aurorae.Interfaces;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography.X509Certificates;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<AuroraeDb>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("AuroraeDBConnection")));
 builder.Services.AddScoped<TokenAuthMiddleware>();
+builder.Services.AddSingleton<IThumbnailGenerator, AvifThumbnailGenerator>();
 
 if (!builder.Environment.IsDevelopment())
 {
@@ -29,18 +31,19 @@ if (!builder.Environment.IsDevelopment())
         options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
 
         options.KnownIPNetworks.Clear();
-        options.KnownProxies.Clear(); // Cloudflare IPs are many
+        options.KnownProxies.Clear();
     });
 }
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
     app.UseForwardedHeaders();
 }
+
+app.UseStatusCodePagesWithReExecute("/Home/Error", "?code={0}");
 
 app.UseMiddleware<TokenAuthMiddleware>();
 

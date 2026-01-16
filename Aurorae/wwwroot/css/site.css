@@ -29,3 +29,19 @@ body {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
   text-align: start;
 }
+
+.hover-parent-only,
+.hover-only {
+    opacity: 0;
+    transition: opacity .15s ease;
+}
+
+.hover-parent-only {
+    pointer-events: none;
+}
+
+.hover-parent:hover .hover-parent-only,
+.hover-only:hover {
+    opacity: 1;
+    pointer-events: auto;
+}

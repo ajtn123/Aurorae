@@ -1,8 +1,10 @@
 @using Aurorae.Models.Gallery
+@using Humanizer
 @model FileViewModel
 @{
     ViewData["Title"] = $"图库 - {Model.FileInfo.Name}";
     ViewData["Header"] = $"图库/{Model.ItemPath}";
+    var file = Model.FileInfo;
     var (prev, parent, next) = Model.GetNeighbors();
 }
 
@@ -28,6 +30,11 @@
         </a>
     }
 </div>
+
+<p>
+    <span class="badge bg-info text-bg-info">@file.Length.Bytes().Humanize()</span>
+    <span class="badge bg-secondary text-bg-secondary">@file.LastWriteTime.Humanize()</span>
+</p>
 
 @if (Model.IsImage)
 {

@@ -1,4 +1,7 @@
+using Aurorae.Interfaces;
+using Aurorae.Models.DbModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Aurorae.Controllers;
 
@@ -10,24 +13,77 @@ public class ResourceController : Controller
         if (string.IsNullOrWhiteSpace(name))
             return NotFound();
 
-        var path = Path.Combine(LocalPath.Gallery, name);
-        var file = new FileInfo(path);
+        var file = new FileInfo(Path.Combine(LocalPath.Gallery, name));
         if (!file.Exists)
             return NotFound();
-        else
+
+        var etag = GetEtag(file);
+
+        if (Request.Headers.IfNoneMatch.Contains(etag))
+            return StatusCode(StatusCodes.Status304NotModified);
+
+        Response.Headers.ETag = etag;
+
+        return File(file.OpenRead(), GetContentType(file.Name));
+    }
+
+    private static readonly SemaphoreSlim thumbnailLock = new(1);
+    [HttpGet("/resources/thumbnails/{*name}")]
+    public async Task<IActionResult> GetThumbnail(
+        [FromRoute] string name,
+        [FromServices] AuroraeDb db,
+        [FromServices] IThumbnailGenerator thumbnailGenerator,
+        [FromQuery] int width = -1,
+        [FromQuery] int height = 480)
+    {
+        if (string.IsNullOrWhiteSpace(name) || !GetContentType(name).StartsWith("image"))
+            return NotFound();
+
+        var file = new FileInfo(Path.Combine(LocalPath.Gallery, name));
+        if (!file.Exists)
+            return NotFound();
+        if (file.Length <= 1 << 16)
+            return GetImage(name);
+
+        await thumbnailLock.WaitAsync();
+        try
         {
-            var etag = $"{file.LastWriteTimeUtc.ToBinary()}-{file.Length}";
+            if (await db.Thumbnails.AsNoTracking().FirstOrDefaultAsync(t => t.FilePath == name && t.Width == width && t.Height == height) is { } thumbnail)
+                return ServeThumbnail(thumbnail);
 
-            if (Request.Headers.IfNoneMatch.Contains(etag))
+            var data = await thumbnailGenerator.GenerateAsync(file.FullName, width, height);
+            thumbnail = new Thumbnail
             {
-                return StatusCode(StatusCodes.Status304NotModified);
-            }
+                FilePath = name,
+                Data = data,
+                Width = width,
+                Height = height,
+                MimeType = thumbnailGenerator.ContentType,
+            };
 
-            Response.Headers.ETag = etag;
+            db.Thumbnails.Add(thumbnail);
+            await db.SaveChangesAsync();
 
-            return File(file.OpenRead(), GetContentType(file.Name));
+            return ServeThumbnail(thumbnail);
+        }
+        finally
+        {
+            thumbnailLock.Release();
         }
     }
 
+    private IActionResult ServeThumbnail(Thumbnail thumbnail)
+    {
+        var etag = GetEtag(thumbnail);
+
+        if (Request.Headers.IfNoneMatch.Contains(etag))
+            return StatusCode(StatusCodes.Status304NotModified);
+
+        Response.Headers.ETag = etag;
+        return File(thumbnail.Data, thumbnail.MimeType);
+    }
+
     public static string GetContentType(string fileName) => MimeMapping.MimeUtility.GetMimeMapping(fileName);
+    public static string GetEtag(FileInfo file) => $"{file.LastWriteTimeUtc.Ticks}-{file.Length}";
+    public static string GetEtag(Thumbnail thumbnail) => $"{thumbnail.CreatedAt.UtcTicks}-{thumbnail.Data.Length}-{thumbnail.Width}-{thumbnail.Height}";
 }
