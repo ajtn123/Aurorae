@@ -6,18 +6,15 @@
  * License: MIT, see file 'LICENSE'
  */
 
-{
-    const htmlElement = document.querySelector('html');
-    if (htmlElement.getAttribute('data-bs-theme') == 'auto') {
-        function updateTheme() {
-            document.querySelector("html").setAttribute('data-bs-theme',
-                window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-        }
+const htmlElement = document.querySelector('html');
 
-        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', updateTheme);
-        updateTheme();
-    }
+function updateTheme() {
+    const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    document.querySelector("html").setAttribute('data-bs-theme', theme);
 }
+
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', updateTheme);
+updateTheme();
 
 
 /*
@@ -28,23 +25,20 @@
  * Retrieved 2026-01-16, License - CC BY-SA 3.0
  */
 
-document.addEventListener("DOMContentLoaded", function () {
-    const nav = document.querySelector("nav");
+const nav = document.querySelector("nav");
+const bannerHeight = nav.offsetHeight;
+let lastScrollTop = 0;
 
-    const bannerHeight = nav.offsetHeight;
-    let lastScrollTop = 0;
+window.addEventListener("scroll", function () {
+    const currScrollTop = window.pageYOffset || document.documentElement.scrollTop;
 
-    window.addEventListener("scroll", function () {
-        const currScrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    if (currScrollTop < bannerHeight) {
+        nav.style.transform = "translateY(0)";
+    } else if (currScrollTop > lastScrollTop) {
+        nav.style.transform = "translateY(-150%)";
+    } else {
+        nav.style.transform = "translateY(0)";
+    }
 
-        if (currScrollTop < bannerHeight) {
-            nav.style.transform = "translateY(0)";
-        } else if (currScrollTop > lastScrollTop) {
-            nav.style.transform = "translateY(-150%)";
-        } else {
-            nav.style.transform = "translateY(0)";
-        }
-
-        lastScrollTop = currScrollTop;
-    });
+    lastScrollTop = currScrollTop;
 });

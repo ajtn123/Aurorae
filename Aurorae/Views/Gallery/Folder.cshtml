@@ -12,7 +12,7 @@
 
 @if (!Model.IsRoot)
 {
-    <div class="list-group list-group-horizontal-sm mb-2">
+    <div class="folder-nav list-group list-group-horizontal-sm mb-2">
         @if (prev != null)
         {
             <a class="list-group-item list-group-item-action" href="/gallery/@prev.ItemPath">
@@ -74,7 +74,7 @@
         {
             <a href="/gallery/@file.ItemPath">
                 <div class="card border-0">
-                    <img src="/resources/thumbnails/@file.ItemPath" class="card-img loading"
+                    <img src="/resources/thumbnails/@file.ItemPath" class="card-img object-fit-contain loading"
                          loading="lazy" height="240" onload="this.classList.remove('loading')">
                     <div class="card-img-overlay hover-only">
                         <h5 class="card-title p-1 text-bg-dark bg-opacity-50 rounded">@file.FileInfo.Name</h5>

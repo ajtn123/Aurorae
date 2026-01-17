@@ -45,3 +45,10 @@ body {
     opacity: 1;
     pointer-events: auto;
 }
+
+.folder-nav > a,
+.file-nav > a {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}

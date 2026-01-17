@@ -18,6 +18,13 @@
         "css/bootstrap.min.css",
         "js/bootstrap.bundle.min.js"
       ]
+    },
+    {
+      "library": "medium-zoom@1.1.0",
+      "destination": "wwwroot/lib/medium-zoom/",
+      "files": [
+        "medium-zoom.min.js"
+      ]
     }
   ]
 }

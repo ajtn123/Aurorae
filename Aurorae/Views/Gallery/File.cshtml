@@ -1,16 +1,18 @@
 @using Aurorae.Models.Gallery
 @using Humanizer
+@inject ImageSourceProvider ImageSourceProvider
 @model FileViewModel
 @{
     ViewData["Title"] = $"图库 - {Model.FileInfo.Name}";
     ViewData["Header"] = $"图库/{Model.ItemPath}";
     var file = Model.FileInfo;
     var (prev, parent, next) = Model.GetNeighbors();
+    var source = ImageSourceProvider.GetSource(Model.FileInfo);
 }
 
 <h1>@ViewData["Header"]</h1>
 
-<div class="list-group list-group-horizontal-sm mb-2">
+<div class="file-nav list-group list-group-horizontal-sm mb-2">
     @if (prev != null)
     {
         <a class="list-group-item list-group-item-action" href="/gallery/@prev.ItemPath">
@@ -32,12 +34,21 @@
 </div>
 
 <p>
-    <span class="badge bg-info text-bg-info">@file.Length.Bytes().Humanize()</span>
-    <span class="badge bg-secondary text-bg-secondary">@file.LastWriteTime.ToString("f")</span>
-    <span class="badge bg-secondary text-bg-secondary">@file.LastWriteTime.Humanize()</span>
+    <span class="badge text-bg-info">@file.Length.Bytes().Humanize()</span>
+    <span class="badge text-bg-secondary">@file.LastWriteTime.ToString("f")</span>
+    <span class="badge text-bg-secondary">@file.LastWriteTime.Humanize()</span>
+    @if (source != null)
+    {
+        <a href="@source.Url"><span class="badge text-bg-success">@source.Type</span></a>
+    }
 </p>
 
 @if (Model.IsImage)
 {
-    <img src="/resources/images/@Model.ItemPath" class="image rounded" />
+    <img src="/resources/images/@Model.ItemPath" id="image" class="zoomable" />
+}
+
+@section Scripts {
+    <script src="~/lib/medium-zoom/medium-zoom.min.js"></script>
+    <script>mediumZoom('.zoomable')</script>
 }

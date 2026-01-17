@@ -15,6 +15,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<AuroraeDb>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("AuroraeDBConnection")));
 builder.Services.AddSingleton<IThumbnailGenerator, AvifThumbnailGenerator>();
+builder.Services.AddSingleton<ImageSourceProvider>();
 
 if (!builder.Environment.IsDevelopment())
 {
