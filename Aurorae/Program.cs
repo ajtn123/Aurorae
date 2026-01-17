@@ -9,11 +9,14 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<AuroraeDb>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("AuroraeDBConnection")));
-builder.Services.AddScoped<TokenAuthMiddleware>();
 builder.Services.AddSingleton<IThumbnailGenerator, AvifThumbnailGenerator>();
 
 if (!builder.Environment.IsDevelopment())
 {
+    builder.Services.AddScoped<TokenAuthMiddleware>();
+    builder.Services.AddRequestDecompression();
+    builder.Services.AddResponseCompression(options => options.EnableForHttps = true);
+
     builder.WebHost.ConfigureKestrel(options =>
     {
         options.ListenAnyIP(10000);
@@ -40,12 +43,14 @@ var app = builder.Build();
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
+    app.UseStatusCodePagesWithReExecute("/Home/Error", "?code={0}");
+
     app.UseForwardedHeaders();
+
+    app.UseMiddleware<TokenAuthMiddleware>();
+    app.UseRequestDecompression();
+    app.UseResponseCompression();
 }
-
-app.UseStatusCodePagesWithReExecute("/Home/Error", "?code={0}");
-
-app.UseMiddleware<TokenAuthMiddleware>();
 
 app.UseRouting();
 

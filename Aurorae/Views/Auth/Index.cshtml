@@ -4,24 +4,7 @@
 
 <h1>@ViewData["Title"]</h1>
 
-<div>
-    <input type="text" id="token-box"/>
-    <button onclick="addToken()">添加</button>
-</div>
-
-@section Scripts {
-    <script>
-        const box = document.getElementById('token-box');
-        function addToken() {
-            const token = box.value;
-            fetch('/auth/add', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(token),
-            })
-            .then(response => response.text())
-            .then(data => alert(data))
-            .catch((error) => alert('Failed to add Access Token'));
-        }
-    </script>
-}
+<form method="post">
+    <input type="text" name="token"/>
+    <button>添加</button>
+</form>

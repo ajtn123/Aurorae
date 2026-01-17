@@ -10,8 +10,8 @@ public class AuthController : Controller
         return View();
     }
 
-    [HttpPost("/auth/add")]
-    public IActionResult AddToken([FromBody] string token)
+    [HttpPost]
+    public IActionResult Index([FromForm] string token)
     {
         Response.Cookies.Append("access_token", token, new CookieOptions
         {
@@ -20,6 +20,6 @@ public class AuthController : Controller
             Expires = DateTimeOffset.UtcNow.AddYears(1),
         });
 
-        return Ok("Access Token Added");
+        return Redirect("/");
     }
 }
