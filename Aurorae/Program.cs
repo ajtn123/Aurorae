@@ -3,7 +3,12 @@ global using Aurorae.Utils;
 using Aurorae.Interfaces;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 using System.Security.Cryptography.X509Certificates;
+
+var culture = new CultureInfo("zh-CN");
+CultureInfo.DefaultThreadCurrentCulture = culture;
+CultureInfo.DefaultThreadCurrentUICulture = culture;
 
 var builder = WebApplication.CreateBuilder(args);
 
