@@ -68,7 +68,26 @@
             }
         </div>
     </div>
+}
 
+<div class="btn-toolbar mb-2">
+    <div class="btn-group">
+        @if (folders.Length != 0)
+        {
+            @if (Model.IsRecursive)
+            {
+                <a class="btn btn-primary active" href="?">递归检索</a>
+            }
+            else
+            {
+                <a class="btn btn-primary" href="?recursive=true">递归检索</a>
+            }
+        }
+    </div>
+</div>
+
+@if (files.Length != 0)
+{
     <div class="d-flex flex-wrap gap-2">
         @foreach (FileViewModel file in files.Where(x => x.IsImage))
         {

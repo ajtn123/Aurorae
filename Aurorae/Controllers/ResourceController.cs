@@ -10,7 +10,9 @@ public class ResourceController : Controller
     [HttpGet("/resources/images/{*name}")]
     public IActionResult GetImage(string name)
     {
-        if (string.IsNullOrWhiteSpace(name))
+        if (string.IsNullOrWhiteSpace(name) ||
+            GetContentType(name) is not { } type ||
+            !type.StartsWith("image"))
             return NotFound();
 
         var file = new FileInfo(Path.Combine(LocalPath.Gallery, name));
@@ -24,7 +26,29 @@ public class ResourceController : Controller
 
         Response.Headers.ETag = etag;
 
-        return File(file.OpenRead(), GetContentType(file.Name));
+        return File(file.OpenRead(), type);
+    }
+
+    [HttpGet("/resources/text/{*name}")]
+    public IActionResult GetText(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name) ||
+            GetContentType(name) is not { } type ||
+            !type.StartsWith("text"))
+            return NotFound();
+
+        var file = new FileInfo(Path.Combine(LocalPath.Gallery, name));
+        if (!file.Exists)
+            return NotFound();
+
+        var etag = GetEtag(file);
+
+        if (Request.Headers.IfNoneMatch.Contains(etag))
+            return StatusCode(StatusCodes.Status304NotModified);
+
+        Response.Headers.ETag = etag;
+
+        return Content(System.IO.File.ReadAllText(file.FullName), type);
     }
 
     private static readonly SemaphoreSlim thumbnailLock = new(1);

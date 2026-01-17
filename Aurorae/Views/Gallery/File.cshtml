@@ -47,8 +47,24 @@
 {
     <img src="/resources/images/@Model.ItemPath" id="image" class="zoomable" />
 }
+@if (Model.IsText)
+{
+    <div id="text"></div>
+}
 
 @section Scripts {
-    <script src="~/lib/medium-zoom/medium-zoom.min.js"></script>
-    <script>mediumZoom('.zoomable')</script>
+    <script>window.ItemPath = @Json.Serialize(Model.ItemPath)</script>
+    @if (Model.IsImage)
+    {
+        <script src="~/lib/medium-zoom/medium-zoom.min.js"></script>
+        <script>mediumZoom('.zoomable')</script>
+    }
+    @if (Model.IsText)
+    {
+        <script>
+            fetch(`/resources/text/${window.ItemPath}`)
+                .then(r => r.text())
+                .then(t => document.getElementById('text').innerText = t);
+        </script>
+    }
 }

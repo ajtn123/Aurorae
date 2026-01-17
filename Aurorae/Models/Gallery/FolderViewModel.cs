@@ -2,16 +2,26 @@ namespace Aurorae.Models.Gallery;
 
 public class FolderViewModel : ItemViewModel
 {
-    public FolderViewModel(string path) : this(new DirectoryInfo(path)) { }
-    public FolderViewModel(DirectoryInfo directory) : base(directory.FullName)
+    public FolderViewModel(string path, bool recursive = false) : this(new DirectoryInfo(path), recursive) { }
+    public FolderViewModel(DirectoryInfo directory, bool recursive = false) : base(directory.FullName)
     {
         DirectoryInfo = directory;
+        IsRecursive = recursive;
+        enumeration = new()
+        {
+            AttributesToSkip = FileAttributes.Hidden | FileAttributes.System,
+            IgnoreInaccessible = true,
+            RecurseSubdirectories = recursive,
+        };
     }
 
     public DirectoryInfo DirectoryInfo { get; }
+    public bool IsRecursive { get; set; }
 
     public bool IsRoot => ItemPath == ".";
     public FolderViewModel? Parent => DirectoryInfo.Parent is { } parent ? new(parent) : null;
+
+    private readonly EnumerationOptions enumeration;
 
     public string[] FolderPathArray => Directory.GetDirectories(DirectoryInfo.FullName, "*", enumeration);
     public string[] FilePathArray => Directory.GetFiles(DirectoryInfo.FullName, "*", enumeration);
@@ -21,12 +31,6 @@ public class FolderViewModel : ItemViewModel
     public IEnumerable<FileInfo> FileInfos => DirectoryInfo.EnumerateFiles("*", enumeration).OrderBy(x => x.Name);
     public IEnumerable<FolderViewModel> Folders => FolderInfos.Select(dir => new FolderViewModel(dir));
     public IEnumerable<FileViewModel> Files => FileInfos.Select(file => new FileViewModel(file));
-
-    private readonly EnumerationOptions enumeration = new()
-    {
-        AttributesToSkip = FileAttributes.Hidden | FileAttributes.System,
-        IgnoreInaccessible = true,
-    };
 
     public (FolderViewModel? Prev, FolderViewModel? Parent, FolderViewModel? Next) GetNeighbors()
     {
