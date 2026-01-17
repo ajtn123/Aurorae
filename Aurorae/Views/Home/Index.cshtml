@@ -4,17 +4,22 @@
 
 <h1 class="display-4">你好。</h1>
 
-<div class="modules">
-    <div class="module card">
+<div class="modules d-flex flex-wrap gap-2">
+    <div class="module card flex-grow-1">
         <div class="card-body">
             <pre id="datetime" class="m-0"></pre>
+        </div>
+    </div>
+    <div class="module card flex-grow-1">
+        <div class="card-body">
+            <pre id="system-info" class="m-0">@await FastfetchAdapter.GetFastfetchOutput()</pre>
         </div>
     </div>
 </div>
 
 @section Scripts {
     <script>
-        const datetime = document.getElementById('datetime')
+        const datetime = document.getElementById('datetime');
         function updateDatetime() {
             const dt = new Date();
             datetime.textContent = JSON.stringify({
@@ -32,6 +37,6 @@
         }
 
         updateDatetime();
-        setInterval(updateDatetime, 1000)
+        setInterval(updateDatetime, 1000);
     </script>
 }

@@ -9,6 +9,7 @@ using System.Security.Cryptography.X509Certificates;
 var culture = new CultureInfo("zh-CN");
 CultureInfo.DefaultThreadCurrentCulture = culture;
 CultureInfo.DefaultThreadCurrentUICulture = culture;
+_ = FastfetchAdapter.GetFastfetchOutput();
 
 var builder = WebApplication.CreateBuilder(args);
 
