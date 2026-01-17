@@ -24,7 +24,8 @@ public class FileViewModel : ItemViewModel
         if (parent == null)
             return (null, null, null);
 
-        var peers = parent.FilePaths.ToArray();
+        var peers = parent.FilePathArray;
+        Array.Sort(peers);
         var selfIndex = peers.IndexOf(FileInfo.FullName);
         FileViewModel? prev = null, next = null;
         if (selfIndex > 0)

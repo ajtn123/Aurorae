@@ -17,7 +17,6 @@ public class AvifThumbnailGenerator() : IThumbnailGenerator
                     .WithVideoCodec(VideoCodec.LibaomAv1)
                     .WithConstantRateFactor(43)
                     .WithCustomArgument("-cpu-used 8")
-                    .WithCustomArgument("-still-picture true")
                     .WithVideoFilters(filters => filters.Scale(width, height))
                     .ForcePixelFormat("yuv420p")
                     .ForceFormat("avif"))
