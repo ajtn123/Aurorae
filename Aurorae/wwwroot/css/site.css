@@ -65,4 +65,7 @@ img.loading {
         height: auto;
         margin-bottom: 0.5rem;
     }
+    .d-sm-flex .card img.loading {
+        height: 400px;
+    }
 }
