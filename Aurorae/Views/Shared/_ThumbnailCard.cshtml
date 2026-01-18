@@ -1,0 +1,12 @@
+﻿@using Aurorae.Models.Gallery
+@model FileViewModel
+
+<a href="/gallery/@Model.ItemPath">
+    <div class="card border-0">
+        <img src="/resources/thumbnails/@Model.ItemPath" class="card-img object-fit-contain loading"
+             loading="lazy" height="240" onload="this.classList.remove('loading')">
+        <div class="card-img-overlay hover-only">
+            <h5 class="card-title p-1 text-bg-dark bg-opacity-50 rounded float-start position-relative z-1">@Model.FileInfo.Name</h5>
+        </div>
+    </div>
+</a>

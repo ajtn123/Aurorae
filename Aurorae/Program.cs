@@ -20,6 +20,8 @@ builder.Services.AddSingleton<ImageSourceProvider>();
 
 if (!builder.Environment.IsDevelopment())
 {
+    builder.Services.AddScoped<FileSyncService>();
+    builder.Services.AddHostedService<FileSyncWorker>();
     builder.Services.AddScoped<TokenAuthMiddleware>();
     builder.Services.AddRequestDecompression();
     builder.Services.AddResponseCompression(options => options.EnableForHttps = true);

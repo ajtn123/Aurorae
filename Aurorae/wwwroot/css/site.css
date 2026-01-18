@@ -52,3 +52,9 @@ body {
     white-space: nowrap;
     text-overflow: ellipsis;
 }
+
+img.loading {
+    width: 400px;
+    background-color: var(--bs-secondary);
+    opacity: 0.25;
+}

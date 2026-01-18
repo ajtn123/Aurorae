@@ -6,8 +6,9 @@ namespace Aurorae.Controllers;
 
 public class HomeController : Controller
 {
-    public IActionResult Index()
+    public IActionResult Index([FromQuery] int images = 100)
     {
+        ViewBag.Images = images;
         return View();
     }
 

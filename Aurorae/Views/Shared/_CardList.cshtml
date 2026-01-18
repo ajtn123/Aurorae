@@ -1,0 +1,6 @@
+﻿@model IEnumerable<(string View, object Model)>
+
+@foreach ((var view, var model) in Model)
+{
+    @await Html.PartialAsync(view, model)
+}
