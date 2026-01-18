@@ -22,7 +22,7 @@ public class FolderViewModel : ItemViewModel
     public FolderViewModel? Parent => DirectoryInfo.Parent is { } parent ? new(parent) : null;
 
     private readonly EnumerationOptions enumeration;
-    private readonly LexicographicStringComparer comparer = new();
+    private static readonly LexicographicStringComparer comparer = new();
 
     public string[] FolderPathArray => Directory.GetDirectories(DirectoryInfo.FullName, "*", enumeration);
     public string[] FilePathArray => Directory.GetFiles(DirectoryInfo.FullName, "*", enumeration);
