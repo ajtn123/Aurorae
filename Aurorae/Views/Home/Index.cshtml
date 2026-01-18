@@ -20,7 +20,7 @@
     </div>
 </div>
 
-<div class="d-flex flex-wrap gap-2 mb-2" id="thumbnails">
+<div class="d-sm-flex flex-wrap gap-2 mb-2" id="thumbnails">
     @await Html.PartialAsync("_CardList", Aurorae.Controllers.GalleryController.RandomItems(db, (int)ViewBag.Images).Select(x => ("_ThumbnailCard", (object)x)))
     <button type="button" onclick="loadMore(this)" class="btn btn-outline-primary flex-grow-1 align-content-center justify-content-center flex-wrap text-decoration-none">更多</button>
 </div>

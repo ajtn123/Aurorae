@@ -58,3 +58,11 @@ img.loading {
     background-color: var(--bs-secondary);
     opacity: 0.25;
 }
+
+@media (max-width: 575.98px) {
+    .d-sm-flex .card img {
+        width: 100%;
+        height: auto;
+        margin-bottom: 0.5rem;
+    }
+}

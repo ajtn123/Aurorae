@@ -94,7 +94,7 @@
 
 @if (files.Length != 0)
 {
-    <div class="d-flex flex-wrap gap-2 mb-2" id="thumbnails">
+    <div class="d-sm-flex flex-wrap gap-2 mb-2" id="thumbnails">
         @await Html.PartialAsync("_CardList", files.Where(x => x.IsImage).Select(x => ("_ThumbnailCard", (object)x)))
     </div>
 }
