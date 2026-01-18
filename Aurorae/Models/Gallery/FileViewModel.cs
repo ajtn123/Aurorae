@@ -29,7 +29,7 @@ public class FileViewModel : ItemViewModel
             return (null, null, null);
 
         var peers = parent.FilePathArray;
-        Array.Sort(peers);
+        Array.Sort(peers, LexicographicStringComparer.Comparison);
         var selfIndex = peers.IndexOf(FileInfo.FullName);
         FileViewModel? prev = null, next = null;
         if (selfIndex > 0)
