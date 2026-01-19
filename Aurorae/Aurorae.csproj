@@ -5,10 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="Properties\launchSettings.json" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="FFMpegCore" Version="5.4.0" />
     <PackageReference Include="Humanizer.Core.zh-CN" Version="3.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.2">

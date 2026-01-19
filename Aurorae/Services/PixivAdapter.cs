@@ -27,7 +27,7 @@ public class PixivAdapter(AuroraeDb db, PixivClient client, ILogger<PixivAdapter
             logger.LogError(ex, "GetPixivIllustInfoAsync(pid: {pid})", pid);
             var info = new PixivIllustInfo() { Id = pid, Title = "Pixiv 元数据获取失败" };
 
-            if (ex is PixivException || ex is HttpRequestException { StatusCode: System.Net.HttpStatusCode.NotFound })
+            if (ex is PixivException or HttpRequestException { StatusCode: System.Net.HttpStatusCode.NotFound })
             {
                 db.PixivIllustInfos.Add(info);
                 await db.SaveChangesAsync();
