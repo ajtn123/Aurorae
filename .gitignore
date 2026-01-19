@@ -60,3 +60,4 @@ nunit-*.xml
 *.user
 
 Aurorae/wwwroot/lib/
+Aurorae/Properties/

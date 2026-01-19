@@ -5,19 +5,13 @@ namespace Aurorae.Services;
 public class ImageSourceProvider
 {
     private readonly IImageSource[] sources = [new PixivImageSource()];
-    public ImageSourceInfo? GetSource(FileInfo file)
-        => sources.Where(x => x.IsMatch(file))
-            .Select(x => new ImageSourceInfo(x.Name, x.GetSourceUrl(file)))
-            .FirstOrDefault();
+    public dynamic? GetSource(FileInfo file)
+        => sources.Select(x => x.GetSource(file)).FirstOrDefault(x => x != null, null);
 }
-
-public record ImageSourceInfo(string Type, string Url);
 
 public interface IImageSource
 {
-    string Name { get; }
-    bool IsMatch(FileInfo file);
-    string GetSourceUrl(FileInfo file);
+    dynamic? GetSource(FileInfo file);
 }
 
 public partial class PixivImageSource : IImageSource
@@ -26,14 +20,17 @@ public partial class PixivImageSource : IImageSource
     private static partial Regex Pattern();
 
     public string Name => "Pixiv";
-    public bool IsMatch(FileInfo file) => Pattern().IsMatch(file.Name);
-    public string GetSourceUrl(FileInfo file)
+    public dynamic? GetSource(FileInfo file)
     {
-        var info = Pattern().Match(file.Name).Groups;
+        if (!Pattern().IsMatch(file.Name))
+            return null;
 
-        var url = $"https://www.pixiv.net/artworks/{info["pid"]}";
-        if (int.TryParse(info["index"].Value, out var index))
-            url += $"#{index + 1}";
-        return url;
+        var info = Pattern().Match(file.Name).Groups;
+        var pid = int.TryParse(info["pid"]);
+        var index = (int.TryParse(info["index"]) ?? 0) + 1;
+
+        var url = $"https://www.pixiv.net/artworks/{pid}#{index}";
+
+        return new { Name, Url = url, Pid = pid, Index = index };
     }
 }

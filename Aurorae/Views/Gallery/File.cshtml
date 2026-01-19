@@ -1,6 +1,8 @@
+@using Aurorae.Models.DbModels
 @using Aurorae.Models.Gallery
 @using Humanizer
 @inject ImageSourceProvider ImageSourceProvider
+@inject PixivAdapter Pixiv
 @model FileViewModel
 @{
     ViewData["Title"] = $"图库 - {Model.FileInfo.Name}";
@@ -8,6 +10,11 @@
     var file = Model.FileInfo;
     var (prev, parent, next) = Model.GetNeighbors();
     var source = ImageSourceProvider.GetSource(Model.FileInfo);
+    var info = source?.Name switch
+    {
+        "Pixiv" => await Pixiv.GetPixivIllustInfoAsync(source.Pid),
+        _ => null
+    };
 }
 
 <h1>@ViewData["Header"]</h1>
@@ -33,23 +40,52 @@
     }
 </div>
 
-<p>
-    <span class="badge text-bg-info">@file.Length.Bytes().Humanize()</span>
-    <span class="badge text-bg-secondary">@file.LastWriteTime.ToString("f")</span>
-    <span class="badge text-bg-secondary">@file.LastWriteTime.Humanize()</span>
+<p class="mb-2">
+    <span class="badge text-bg-primary">@file.Length.Bytes().Humanize()</span>
     @if (source != null)
     {
-        <a href="@source.Url"><span class="badge text-bg-success">@source.Type</span></a>
+        <a href="@source.Url"><span class="badge text-bg-success">@source.Name</span></a>
+        @switch (source.Name)
+        {
+            case "Pixiv":
+                PixivIllustInfo illust = info!;
+                <a href="https://www.pixiv.net/users/@illust.UserId"><span class="badge text-bg-primary">@illust.UserName</span></a>
+                <span class="badge text-bg-secondary">@source.Index / @illust.PageCount</span>
+                <span class="badge text-bg-secondary">@illust.CreateAt.ToString("f")</span>
+                <span class="badge text-bg-secondary">@illust.CreateAt.Humanize()</span>
+                foreach (string tag in illust.Tags ?? [])
+                {
+                    <span class="badge text-bg-@(tag.StartsWith("R-18") ? "danger" : "info")">@tag</span>
+                }
+                if (illust.IsOriginal)
+                {
+                    <span class="badge text-bg-success">原创</span>
+                }
+                break;
+            default:
+                break;
+        }
     }
 </p>
 
 @if (Model.IsImage)
 {
-    <img src="/resources/images/@Model.ItemPath" id="image" class="zoomable" />
+    <img src="/resources/images/@Model.ItemPath" id="image" class="zoomable mb-2" />
 }
 @if (Model.IsText)
 {
-    <div id="text"></div>
+    <div id="text" class="mb-2"></div>
+}
+
+@switch (source?.Name)
+{
+    case "Pixiv":
+        PixivIllustInfo illust = info!;
+        <h2>@illust.Title</h2>
+        @Html.Raw(illust.Description)
+        break;
+    default:
+        break;
 }
 
 @section Scripts {

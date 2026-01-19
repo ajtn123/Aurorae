@@ -69,3 +69,8 @@ img.loading {
         height: 400px;
     }
 }
+
+.medium-zoom-overlay,
+.zoomable {
+    cursor: default !important;
+}

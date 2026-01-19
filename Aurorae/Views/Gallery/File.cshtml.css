@@ -6,7 +6,3 @@
     object-fit: contain;
     border-radius: var(--bs-border-radius);
 }
-
-.zoomable {
-    cursor: default;
-}

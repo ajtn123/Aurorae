@@ -3,6 +3,7 @@ global using Aurorae.Utils;
 using Aurorae.Interfaces;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
+using Scighost.PixivApi;
 using System.Globalization;
 using System.Security.Cryptography.X509Certificates;
 
@@ -17,6 +18,8 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<AuroraeDb>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("AuroraeDBConnection")));
 builder.Services.AddSingleton<IThumbnailGenerator, AvifThumbnailGenerator>();
 builder.Services.AddSingleton<ImageSourceProvider>();
+builder.Services.AddSingleton<PixivClient>(services => new(httpProxy: LocalPath.HttpProxy));
+builder.Services.AddScoped<PixivAdapter>();
 
 if (!builder.Environment.IsDevelopment())
 {

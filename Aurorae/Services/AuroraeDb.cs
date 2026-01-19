@@ -8,6 +8,7 @@ public class AuroraeDb(DbContextOptions<AuroraeDb> options) : DbContext(options)
     public DbSet<AccessToken> AccessTokens { get; set; }
     public DbSet<Thumbnail> Thumbnails { get; set; }
     public DbSet<FileMeta> FileMetas { get; set; }
+    public DbSet<PixivIllustInfo> PixivIllustInfos { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
