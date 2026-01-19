@@ -49,6 +49,11 @@
         {
             case "Pixiv":
                 PixivIllustInfo illust = info!;
+                if (illust.Error != null)
+                {
+                    <span class="badge text-bg-danger">@illust.Error</span>
+                    break;
+                }
                 <a href="https://www.pixiv.net/users/@illust.UserId"><span class="badge text-bg-primary">@illust.UserName</span></a>
                 <span class="badge text-bg-secondary">@source.Index / @illust.PageCount</span>
                 <span class="badge text-bg-secondary">@illust.CreateAt.ToString("f")</span>
@@ -81,6 +86,7 @@
 {
     case "Pixiv":
         PixivIllustInfo illust = info!;
+        if (illust.Error != null) break;
         <h2>@illust.Title</h2>
         @Html.Raw(illust.Description)
         break;

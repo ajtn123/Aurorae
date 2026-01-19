@@ -36,4 +36,6 @@ public class PixivIllustInfo
     public string? UserAccount { get; set; }
     public int PageCount { get; set; }
     public bool IsOriginal { get; set; }
+
+    public string? Error { get; set; } = null;
 }
