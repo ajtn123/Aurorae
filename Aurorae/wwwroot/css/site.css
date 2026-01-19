@@ -75,6 +75,10 @@ img.loading {
     cursor: default !important;
 }
 
+.medium-zoom-overlay {
+    background-color: var(--bs-body-bg) !important;
+}
+
 .text-bg-info,
 .text-bg-warning {
     color: #fff !important;
