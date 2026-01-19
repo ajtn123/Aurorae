@@ -71,30 +71,31 @@
 }
 
 <div class="btn-toolbar mb-2 gap-2">
-        @if (folders.Length != 0)
-        {
-            <div class="btn-group">
-                @if (Model.IsRecursive)
-                {
-                    <a class="btn btn-primary active" href="?">递归检索</a>
-                }
-                else
-                {
-                    <a class="btn btn-primary" href="?recursive=true">递归检索</a>
-                }
-            </div>
-        }
-        @if (files.Length != 0)
-        {
-            <div class="btn-group">
-                <button type="button" class="btn btn-primary" data-bs-toggle="button" onclick="toggleShuffle()">乱序</button>
-            </div>
-        }
+    @if (folders.Length != 0)
+    {
+        <div class="btn-group">
+            @if (Model.IsRecursive)
+            {
+                <a class="btn btn-primary active" href="?">递归检索</a>
+            }
+            else
+            {
+                <a class="btn btn-primary" href="?recursive=true">递归检索</a>
+            }
+        </div>
+    }
+    @if (files.Length != 0)
+    {
+        <div class="btn-group">
+            <button type="button" class="btn btn-primary" data-bs-toggle="button" onclick="toggleReverse()">倒序</button>
+            <button type="button" class="btn btn-primary" data-bs-toggle="button" onclick="toggleShuffle()">乱序</button>
+        </div>
+    }
 </div>
 
 @if (files.Length != 0)
 {
-    <div class="d-sm-flex flex-wrap gap-2 mb-2" id="thumbnails">
+    <div class="d-flex gap-2 mb-2" id="thumbnails">
         @await Html.PartialAsync("_CardList", files.Where(x => x.IsImage).Select(x => ("_ThumbnailCard", (object)x)))
     </div>
 }
@@ -123,6 +124,10 @@
 
             function restore(parent) {
                 order.forEach(el => parent.appendChild(el));
+            }
+
+            function toggleReverse() {
+                thumbnails.classList.toggle('reverse');
             }
         }
     </script>
