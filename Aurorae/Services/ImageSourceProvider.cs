@@ -29,6 +29,9 @@ public partial class PixivImageSource : IImageSource
         var pid = int.TryParse(info["pid"]);
         var index = (int.TryParse(info["index"]) ?? 0) + 1;
 
+        if (pid == null)
+            return null;
+
         var url = $"https://www.pixiv.net/artworks/{pid}#{index}";
 
         return new { Name, Url = url, Pid = pid, Index = index };
