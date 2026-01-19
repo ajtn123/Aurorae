@@ -74,3 +74,8 @@ img.loading {
 .zoomable {
     cursor: default !important;
 }
+
+.text-bg-info,
+.text-bg-warning {
+    color: #fff !important;
+}
