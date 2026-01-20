@@ -20,6 +20,7 @@ builder.Services.AddSingleton<IThumbnailGenerator, AvifThumbnailGenerator>();
 builder.Services.AddSingleton<ImageSourceProvider>();
 builder.Services.AddSingleton<PixivClient>(services => new(httpProxy: LocalPath.HttpProxy));
 builder.Services.AddScoped<PixivAdapter>();
+builder.Services.AddSingleton<FFProbeAdapter>();
 
 if (builder.Environment.IsProduction())
 {
