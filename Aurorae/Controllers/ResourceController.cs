@@ -108,8 +108,10 @@ public class ResourceController : Controller
     }
 
     [HttpGet("/resources/analyses/{*name}")]
-    public async Task<IActionResult> AnalyzeImage(string name, [FromServices] FFProbeAdapter probe)
+    public async Task<IActionResult> Analyze(string name, [FromServices] FFProbeAdapter probe)
     {
+        if (name.EndsWith("/ffprobe.log"))
+            name = name[..^12];
         if (string.IsNullOrWhiteSpace(name) ||
             GetContentType(name) is not { } type ||
             !type.StartsWith("image"))
