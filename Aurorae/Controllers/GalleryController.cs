@@ -59,7 +59,7 @@ public class GalleryController(AuroraeDb db) : Controller
             .AsAsyncEnumerable();
 
         if (!string.IsNullOrEmpty(filter))
-            results = results.Where(x => x.Contains(filter));
+            results = results.Where(x => x.Contains(filter, StringComparison.OrdinalIgnoreCase));
 
         var favorites = await results
             .Select(x => new FileViewModel(Path.Combine(LocalPath.Gallery, x)))

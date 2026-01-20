@@ -15,6 +15,7 @@ public partial class FolderViewModel : ItemViewModel
         IsRecursive = recursive;
         enumeration = new()
         {
+            MatchCasing = MatchCasing.CaseInsensitive,
             AttributesToSkip = FileAttributes.Hidden | FileAttributes.System,
             IgnoreInaccessible = true,
             RecurseSubdirectories = recursive,
