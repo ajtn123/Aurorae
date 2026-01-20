@@ -42,6 +42,7 @@
 
 <p class="mb-2">
     <span class="badge text-bg-primary">@file.Length.Bytes().Humanize()</span>
+    <span class="badge text-bg-primary">@file.Extension.TrimStart('.').ToUpper()</span>
     @if (source != null)
     {
         <a href="@source.Url"><span class="badge text-bg-success">@source.Name</span></a>
@@ -54,7 +55,7 @@
                     <span class="badge text-bg-danger">@illust.Error</span>
                     break;
                 }
-                <a href="https://www.pixiv.net/users/@illust.UserId"><span class="badge text-bg-primary">@illust.UserName</span></a>
+                <a href="https://www.pixiv.net/users/@illust.UserId"><span class="badge text-bg-warning">@illust.UserName</span></a>
                 <span class="badge text-bg-secondary">@source.Index / @illust.PageCount</span>
                 <span class="badge text-bg-secondary">@illust.CreateAt.ToString("f")</span>
                 <span class="badge text-bg-secondary">@illust.CreateAt.Humanize()</span>

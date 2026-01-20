@@ -32,7 +32,7 @@ public class PixivAdapter(AuroraeDb db, PixivClient client, ILogger<PixivAdapter
                 Error = ex switch
                 {
                     HttpRequestException { StatusCode: { } code } => CommonUtils.GetStatusString((int)code),
-                    PixivException => "返回内容错误",
+                    PixivException => "600 Response Error",
                     _ => ex.GetType().Name
                 }
             };

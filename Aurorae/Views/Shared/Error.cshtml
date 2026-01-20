@@ -4,7 +4,7 @@
     ViewData["Title"] = CommonUtils.GetStatusString(Model.StatusCode);
 }
 
-<h1 class="text-danger">@ViewData["Title"]</h1>
+<h1 class="text-danger"><span class="badge text-bg-danger">@Model.StatusCode</span> @ReasonPhrases.GetReasonPhrase(Model.StatusCode)</h1>
 
 @if (Model.ShowRequestId)
 {
