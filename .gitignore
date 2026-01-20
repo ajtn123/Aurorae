@@ -61,3 +61,4 @@ nunit-*.xml
 
 Aurorae/wwwroot/lib/
 Aurorae/Properties/
+/Aurorae/appsettings.*

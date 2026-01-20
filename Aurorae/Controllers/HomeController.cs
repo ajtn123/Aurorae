@@ -13,6 +13,7 @@ public class HomeController : Controller
         return View();
     }
 
+    [HttpGet("/error")]
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error([FromQuery] int code = 500)
     {

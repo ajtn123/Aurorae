@@ -3,9 +3,9 @@ global using Aurorae.Utils;
 using Aurorae.Interfaces;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
+using NReco.Logging.File;
 using Scighost.PixivApi;
 using System.Globalization;
-using System.Security.Cryptography.X509Certificates;
 
 var culture = new CultureInfo("zh-CN");
 CultureInfo.DefaultThreadCurrentCulture = culture;
@@ -21,25 +21,14 @@ builder.Services.AddSingleton<ImageSourceProvider>();
 builder.Services.AddSingleton<PixivClient>(services => new(httpProxy: LocalPath.HttpProxy));
 builder.Services.AddScoped<PixivAdapter>();
 
-if (!builder.Environment.IsDevelopment())
+if (builder.Environment.IsProduction())
 {
     builder.Services.AddScoped<FileSyncService>();
     builder.Services.AddHostedService<FileSyncWorker>();
     builder.Services.AddScoped<TokenAuthMiddleware>();
     builder.Services.AddRequestDecompression();
     builder.Services.AddResponseCompression(options => options.EnableForHttps = true);
-
-    builder.WebHost.ConfigureKestrel(options =>
-    {
-        options.ListenAnyIP(10000);
-        options.ListenAnyIP(8443, listen =>
-        {
-            listen.UseHttps(https =>
-            {
-                https.ServerCertificate = X509Certificate2.CreateFromPemFile("/etc/ssl/cloudflare/cert.pem", "/etc/ssl/cloudflare/key.pem");
-            });
-        });
-    });
+    builder.Logging.AddFile(builder.Configuration.GetSection("Logging"));
 
     builder.Services.Configure<ForwardedHeadersOptions>(options =>
     {
@@ -52,10 +41,12 @@ if (!builder.Environment.IsDevelopment())
 
 var app = builder.Build();
 
-if (!app.Environment.IsDevelopment())
+if (app.Environment.IsProduction())
 {
-    app.UseExceptionHandler("/Home/Error");
-    app.UseStatusCodePagesWithReExecute("/Home/Error", "?code={0}");
+    app.UseExceptionHandler("/error");
+    app.UseStatusCodePagesWithReExecute("/error", "?code={0}");
+    app.MapGet("/log", (IConfiguration config) => File.ReadAllTextAsync(config["Logging:File:Path"]!));
+    app.MapGet("/version", () => CommonUtils.GetVersionString());
 
     app.UseForwardedHeaders();
 
