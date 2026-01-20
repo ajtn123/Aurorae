@@ -68,6 +68,7 @@ img.loading {
     justify-content: flex-end;
 }
 #thumbnails .card img {
+    max-width: 100%;
     width: auto;
     height: 240px;
 }
@@ -87,6 +88,7 @@ img.loading {
         justify-content: flex-start;
     }
     #thumbnails .card img {
+        max-width: 100%;
         width: 100%;
         height: auto;
     }
