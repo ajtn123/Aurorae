@@ -107,6 +107,22 @@ public class ResourceController : Controller
         return File(thumbnail.Data, thumbnail.MimeType);
     }
 
+    [HttpGet("/resources/analyses/{*name}")]
+    public async Task<IActionResult> AnalyzeImage(string name, [FromServices] FFProbeAdapter probe)
+    {
+        if (string.IsNullOrWhiteSpace(name) ||
+            GetContentType(name) is not { } type ||
+            !type.StartsWith("image"))
+            return NotFound();
+
+        var file = new FileInfo(Path.Combine(LocalPath.Gallery, name));
+        if (!file.Exists)
+            return NotFound();
+
+        var analysis = await probe.Analyze(file);
+        return Content(analysis);
+    }
+
     public static string GetContentType(string fileName) => MimeMapping.MimeUtility.GetMimeMapping(fileName);
     public static string GetEtag(FileInfo file) => $"{file.LastWriteTimeUtc.Ticks}-{file.Length}";
     public static string GetEtag(Thumbnail thumbnail) => $"{thumbnail.CreatedAt.UtcTicks}-{thumbnail.Data.Length}-{thumbnail.Width}-{thumbnail.Height}";

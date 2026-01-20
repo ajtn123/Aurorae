@@ -1,0 +1,82 @@
+﻿@using Aurorae.Models.Gallery
+@model FileViewModel[]
+@{
+    ViewData["Title"] = $"收藏";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+@if (Model.Length != 0)
+{
+    <div class="card mb-2">
+        <div class="card-header border-0" role="button"
+             data-bs-toggle="collapse" href="#file-list">
+            文件 @Model.Length
+        </div>
+        <div class="list-group list-group-flush border-top collapse" id="file-list">
+            @foreach (FileViewModel file in Model)
+            {
+                <a class="list-group-item list-group-item-action" href="/gallery/@file.ItemPath">
+                    <i class="bi bi-@file.IconName"></i> @file.FileInfo.Name
+                </a>
+            }
+        </div>
+    </div>
+}
+
+<div class="btn-toolbar mb-2 gap-2">
+    @if (Model.Length != 0)
+    {
+        <div class="btn-group">
+            <button type="button" class="btn btn-outline-primary" data-bs-toggle="button" onclick="toggleReverse()">倒序</button>
+            <button type="button" class="btn btn-outline-primary" data-bs-toggle="button" onclick="toggleShuffle()">乱序</button>
+        </div>
+    }
+    <form method="get">
+        <div class="input-group">
+            <input type="search" class="form-control" name="filter" value="@Context.Request.Query["filter"]"
+                   placeholder="检索">
+            <button type="submit" class="btn btn-outline-success"><i class="bi bi-search"></i></button>
+        </div>
+    </form>
+</div>
+
+@if (Model.Length != 0)
+{
+    <div class="d-flex gap-2 mb-2" id="thumbnails">
+        @await Html.PartialAsync("_CardList", Model.Where(x => x.IsImage).Select(x => ("_ThumbnailCard", (object)x)))
+    </div>
+}
+
+@section Scripts {
+    <script>
+        const thumbnails = document.querySelector('#thumbnails');
+        if (thumbnails) {
+            const order = Array.from(thumbnails.children);
+
+            let shuffled = false;
+            function toggleShuffle() {
+                if (!shuffled) {
+                    shuffle(thumbnails);
+                } else {
+                    restore(thumbnails);
+                }
+                shuffled = !shuffled;
+            }
+
+            function shuffle(parent) {
+                for (var i = parent.children.length; i >= 0; i--) {
+                    parent.appendChild(parent.children[Math.random() * i | 0]);
+                }
+            }
+
+            function restore(parent) {
+                order.forEach(el => parent.appendChild(el));
+            }
+
+            function toggleReverse() {
+                thumbnails.classList.toggle('reverse');
+            }
+        }
+    </script>
+}
