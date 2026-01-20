@@ -33,7 +33,11 @@ public sealed class FileSyncService(AuroraeDb db)
             foreach (var file in Directory.EnumerateFiles(root, "*", enumeration))
             {
                 await writer.StartRowAsync();
+#if DEBUG
+                await writer.WriteAsync(Path.GetRelativePath(root, file).Replace('\\', '/'), NpgsqlTypes.NpgsqlDbType.Text);
+#else
                 await writer.WriteAsync(Path.GetRelativePath(root, file), NpgsqlTypes.NpgsqlDbType.Text);
+#endif
             }
 
             await writer.CompleteAsync();
