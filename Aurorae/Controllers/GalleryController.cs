@@ -7,14 +7,14 @@ namespace Aurorae.Controllers;
 public class GalleryController(AuroraeDb db) : Controller
 {
     [HttpGet("/gallery/{*name}")]
-    public IActionResult GetItem([FromRoute] string name, [FromQuery] bool recursive = false)
+    public IActionResult GetItem([FromRoute] string name, [FromQuery] string? filter = null, [FromQuery] bool recursive = false)
     {
         if (string.IsNullOrWhiteSpace(name))
-            return View("Folder", new FolderViewModel(LocalPath.Gallery, recursive));
+            return View("Folder", new FolderViewModel(LocalPath.Gallery, filter, recursive));
 
         var path = Path.Combine(LocalPath.Gallery, name);
         if (Directory.Exists(path))
-            return View("Folder", new FolderViewModel(path, recursive));
+            return View("Folder", new FolderViewModel(path, filter, recursive));
         else if (System.IO.File.Exists(path))
             return View("File", new FileViewModel(path));
         else

@@ -110,6 +110,12 @@ img.loading {
     color: #fff !important;
 }
 
+.btn-outline-info,
+.btn-outline-warning {
+    --bs-btn-hover-color: #fff !important;
+    --bs-btn-active-color: #fff !important;
+}
+
 h1 .badge, h2 .badge, h3 .badge,
 h4 .badge, h5 .badge, h6 .badge {
     font-size: inherit;

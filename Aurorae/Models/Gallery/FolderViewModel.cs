@@ -1,11 +1,17 @@
+using System.Text.RegularExpressions;
+
 namespace Aurorae.Models.Gallery;
 
-public class FolderViewModel : ItemViewModel
+public partial class FolderViewModel : ItemViewModel
 {
-    public FolderViewModel(string path, bool recursive = false) : this(new DirectoryInfo(path), recursive) { }
-    public FolderViewModel(DirectoryInfo directory, bool recursive = false) : base(directory.FullName)
+    [GeneratedRegex(@"\*+")]
+    private static partial Regex FilterNormalizer();
+
+    public FolderViewModel(string path, string? filter = null, bool recursive = false) : this(new DirectoryInfo(path), filter, recursive) { }
+    public FolderViewModel(DirectoryInfo directory, string? filter = null, bool recursive = false) : base(directory.FullName)
     {
         DirectoryInfo = directory;
+        Filter = FilterNormalizer().Replace($"*{filter}*", "*");
         IsRecursive = recursive;
         enumeration = new()
         {
@@ -16,6 +22,7 @@ public class FolderViewModel : ItemViewModel
     }
 
     public DirectoryInfo DirectoryInfo { get; }
+    public string Filter { get; }
     public bool IsRecursive { get; set; }
 
     public bool IsRoot => ItemPath == ".";
@@ -24,12 +31,12 @@ public class FolderViewModel : ItemViewModel
     private readonly EnumerationOptions enumeration;
     private static readonly LexicographicStringComparer comparer = new();
 
-    public string[] FolderPathArray => Directory.GetDirectories(DirectoryInfo.FullName, "*", enumeration);
-    public string[] FilePathArray => Directory.GetFiles(DirectoryInfo.FullName, "*", enumeration);
-    public IEnumerable<string> FolderPaths => Directory.EnumerateDirectories(DirectoryInfo.FullName, "*", enumeration).Order(comparer);
-    public IEnumerable<string> FilePaths => Directory.EnumerateFiles(DirectoryInfo.FullName, "*", enumeration).Order(comparer);
-    public IEnumerable<DirectoryInfo> FolderInfos => DirectoryInfo.EnumerateDirectories("*", enumeration).OrderBy(x => x.Name, comparer);
-    public IEnumerable<FileInfo> FileInfos => DirectoryInfo.EnumerateFiles("*", enumeration).OrderBy(x => x.Name, comparer);
+    public string[] FolderPathArray => Directory.GetDirectories(DirectoryInfo.FullName, Filter, enumeration);
+    public string[] FilePathArray => Directory.GetFiles(DirectoryInfo.FullName, Filter, enumeration);
+    public IEnumerable<string> FolderPaths => Directory.EnumerateDirectories(DirectoryInfo.FullName, Filter, enumeration).Order(comparer);
+    public IEnumerable<string> FilePaths => Directory.EnumerateFiles(DirectoryInfo.FullName, Filter, enumeration).Order(comparer);
+    public IEnumerable<DirectoryInfo> FolderInfos => DirectoryInfo.EnumerateDirectories(Filter, enumeration).OrderBy(x => x.Name, comparer);
+    public IEnumerable<FileInfo> FileInfos => DirectoryInfo.EnumerateFiles(Filter, enumeration).OrderBy(x => x.Name, comparer);
     public IEnumerable<FolderViewModel> Folders => FolderInfos.Select(dir => new FolderViewModel(dir));
     public IEnumerable<FileViewModel> Files => FileInfos.Select(file => new FileViewModel(file));
 
