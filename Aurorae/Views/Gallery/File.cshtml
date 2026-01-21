@@ -46,7 +46,7 @@
 <div class="btn-toolbar mb-2 gap-2">
     <form>
         <input type="checkbox" class="btn-check" name="collect" checked="@collect"
-               value="true" id="collect-btn" autocomplete="off" onchange="send(this.form)">
+               value="true" id="collect-btn" autocomplete="off" onchange="collect(this.form)">
         <label for="collect-btn" class="btn btn-outline-warning">收藏</label>
     </form>
     @if (Model.IsImage)
@@ -119,10 +119,11 @@
 @section Scripts {
     <script>window.ItemPath = @Json.Serialize(Model.ItemPath)</script>
     <script>
-        function send(form) {
+        function collect(form) {
+            const url = '/gallery/collect';
             const data = new FormData(form);
-            const url = `/gallery/collect/${window.ItemPath}`;
-            fetch(url, { method: "POST", body: data }).catch(e => console.error(e));
+            data.set('name', window.ItemPath);
+            fetch(url, { method: 'POST', body: data }).catch(e => console.error(e));
         }
     </script>
     @if (Model.IsImage)

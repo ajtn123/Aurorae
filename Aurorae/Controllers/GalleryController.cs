@@ -43,8 +43,8 @@ public class GalleryController(AuroraeDb db) : Controller
         .Where(x => x.IsImage)
         .Take(count);
 
-    [HttpPost("/gallery/collect/{*name}")]
-    public async Task<IActionResult> CollectItem([FromRoute] string name, [FromForm] bool collect)
+    [HttpPost("/gallery/collect")]
+    public async Task<IActionResult> CollectItem([FromForm] string name, [FromForm] bool collect)
     {
         if (await db.FileMetas.FirstOrDefaultAsync(t => t.FilePath == name) is { } file)
         {
