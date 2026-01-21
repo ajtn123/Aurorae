@@ -1,9 +1,9 @@
 ﻿namespace Aurorae.Utils;
 
 /*
- * Fully Managed alternative to StrCmpLogicalW 
- * By mstum, revised on Mar 16, 2018.
+ * Fully Managed alternative to StrCmpLogicalW (modified)
  * 
+ * By mstum, revised on Mar 16, 2018.
  * https://gist.github.com/mstum/63a6e3e8cf54e8ae55b6aa28ca6f20c5
  */
 
@@ -28,8 +28,8 @@
 /// it handles large numbers.
 /// 
 /// At some point, StrCmpLogicalW just gives up trying to parse
-/// something as a number (see the Test cases), while we keep going.
-/// Since we want to sort lexicographily as much as possible,
+/// something as a number, while we keep going.
+/// Since we want to sort lexicographically as much as possible,
 /// that difference makes sense.
 /// </remarks>
 public class LexicographicStringComparer : IComparer<string>
@@ -48,11 +48,10 @@ public class LexicographicStringComparer : IComparer<string>
         // Rules: Numbers < Letters, Space < everything
         if (x == y) return 0;
 
-        // There shouldn't be null or empty values passed
         // "" and null are the same for the purposes of this
-        // if (string.IsNullOrEmpty(x) && !string.IsNullOrEmpty(y)) return -1;
-        // if (!string.IsNullOrEmpty(x) && string.IsNullOrEmpty(y)) return 1;
-        // if (string.IsNullOrEmpty(x) && string.IsNullOrEmpty(y)) return 0;
+        if (string.IsNullOrEmpty(x) && !string.IsNullOrEmpty(y)) return -1;
+        if (!string.IsNullOrEmpty(x) && string.IsNullOrEmpty(y)) return 1;
+        if (string.IsNullOrEmpty(x) && string.IsNullOrEmpty(y)) return 0;
 
         var yl = y.Length;
         for (int i = 0; i < x.Length; i++)
@@ -104,9 +103,9 @@ public class LexicographicStringComparer : IComparer<string>
         var xParsed = ParseNumber(x, ix);
         var yParsed = ParseNumber(y, ix);
 
-        numChars = yParsed.NumCharsRead > xParsed.NumCharsRead
-            ? xParsed.NumCharsRead
-            : yParsed.NumCharsRead;
+        numChars = yParsed.Chars > xParsed.Chars
+            ? xParsed.Chars
+            : yParsed.Chars;
 
         return xParsed.CompareTo(yParsed);
     }
@@ -114,9 +113,9 @@ public class LexicographicStringComparer : IComparer<string>
     private static ParsedNumber ParseNumber(string str, int offset)
     {
         var result = 0;
-        var numChars = 0;
+        var chars = 0;
         var leadingZeroes = 0;
-        var numOverflows = 0;
+        var overflows = 0;
         bool countZeroes = true;
 
         for (int j = offset; j < str.Length; j++)
@@ -124,7 +123,7 @@ public class LexicographicStringComparer : IComparer<string>
             char c = str[j];
             if (IsDigit(c))
             {
-                // 48/0x30 is '0'
+                // char 48 is '0'
                 var cInt = (c - 48);
 
                 checked
@@ -132,11 +131,11 @@ public class LexicographicStringComparer : IComparer<string>
                     long tmp = (result * 10L) + cInt;
                     if (tmp > int.MaxValue)
                     {
-                        numOverflows++;
+                        overflows++;
                         tmp %= int.MaxValue;
                     }
                     result = (int)tmp;
-                    numChars++;
+                    chars++;
                 }
 
                 if (cInt == 0 && countZeroes)
@@ -154,7 +153,7 @@ public class LexicographicStringComparer : IComparer<string>
             }
         }
 
-        return new ParsedNumber(result, numOverflows, leadingZeroes, numChars);
+        return new ParsedNumber(result, overflows, leadingZeroes, chars);
     }
 
     private static bool IsDigit(char c) => (c >= '0' && c <= '9');
@@ -163,41 +162,32 @@ public class LexicographicStringComparer : IComparer<string>
     /// Note that the ParsedNumber is not very useful as a number,
     /// but purely as a way to compare two numbers that are stored in a string.
     /// </summary>
-    private struct ParsedNumber : IComparable<ParsedNumber>, IComparer<ParsedNumber>
+    private struct ParsedNumber(int remainder, int overflows, int leadingZeroes, int chars) : IComparable<ParsedNumber>, IComparer<ParsedNumber>
     {
         /// <summary>
-        /// The remainder, that is, the part of the number that
-        /// didn't overflow int.MaxValue.
+        /// The part of the number that didn't overflow int.MaxValue.
         /// </summary>
-        public int Remainder;
+        public int Remainder = remainder;
 
         /// <summary>
         /// How often did the number overflow int.MaxValue during parsing?
         /// </summary>
-        public int Overflows;
+        public int Overflows = overflows;
 
         /// <summary>
-        /// How many leading zeroes were there in the string during parsing?
-        /// "001" has a LeadingZeroesCount of 2.
-        /// "100" has a LeadingZeroesCount of 0.
-        /// "010" has a LeadingZeroesCount of 1.
+        /// The number of leading zeroes in the string during parsing.
+        /// "001" => 2;
+        /// "100" => 0;
+        /// "010" => 1.
         /// 
         /// This is important, because 001 comes before 01 comes before 1.
         /// </summary>
-        public int LeadingZeroesCount;
+        public int LeadingZeroes = leadingZeroes;
 
         /// <summary>
-        /// How many characters were read from the input during parsing?
+        /// The number of characters read from the input during parsing.
         /// </summary>
-        public int NumCharsRead;
-
-        public ParsedNumber(int remainder, int overflows, int leadingZeroes, int numChars)
-        {
-            Remainder = remainder;
-            Overflows = overflows;
-            LeadingZeroesCount = leadingZeroes;
-            NumCharsRead = numChars;
-        }
+        public int Chars = chars;
 
         public readonly int Compare(ParsedNumber x, ParsedNumber y)
         {
@@ -210,8 +200,8 @@ public class LexicographicStringComparer : IComparer<string>
             // 001 > 01 > 1
             if (x.Remainder == y.Remainder)
             {
-                if (x.LeadingZeroesCount > y.LeadingZeroesCount) return -1;
-                if (x.LeadingZeroesCount < y.LeadingZeroesCount) return 1;
+                if (x.LeadingZeroes > y.LeadingZeroes) return -1;
+                if (x.LeadingZeroes < y.LeadingZeroes) return 1;
             }
 
             if (x.Remainder > y.Remainder) return 1;
