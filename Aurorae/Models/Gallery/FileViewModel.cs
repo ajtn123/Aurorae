@@ -17,9 +17,11 @@ public class FileViewModel : ItemViewModel
     public string ContentType => ResourceController.GetContentType(FileInfo.Name);
     public bool IsImage => ContentType.StartsWith("image");
     public bool IsText => ContentType.StartsWith("text");
+    public bool IsLink => FileInfo.Extension.Equals(".url", StringComparison.OrdinalIgnoreCase);
     public string IconName
         => IsImage ? "image"
           : IsText ? "text-left"
+          : IsLink ? "link"
                    : "file";
 
     public (FileViewModel? Prev, FolderViewModel? Parent, FileViewModel? Next) GetNeighbors()

@@ -13,12 +13,21 @@ public class GalleryController(AuroraeDb db) : Controller
             return View("Folder", new FolderViewModel(LocalPath.Gallery, filter, recursive));
 
         var path = Path.Combine(LocalPath.Gallery, name);
+
         if (Directory.Exists(path))
             return View("Folder", new FolderViewModel(path, filter, recursive));
+
         else if (System.IO.File.Exists(path))
-            return View("File", new FileViewModel(path));
-        else
-            return NotFound();
+        {
+            var file = new FileViewModel(path);
+
+            if (file.IsLink && CommonUtils.GetLink(file.FileInfo) is string url)
+                return Redirect(url);
+
+            return View("File", file);
+        }
+
+        return NotFound();
     }
 
     [HttpGet("/gallery/random")]
