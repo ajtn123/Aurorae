@@ -31,6 +31,13 @@ if (builder.Environment.IsProduction())
     builder.Services.AddResponseCompression(options => options.EnableForHttps = true);
     builder.Logging.AddFile(builder.Configuration.GetSection("Logging"));
 
+    builder.Services.AddHsts(options =>
+    {
+        options.MaxAge = TimeSpan.FromDays(365);
+        options.Preload = true;
+        options.IncludeSubDomains = false;
+    });
+
     builder.Services.Configure<ForwardedHeadersOptions>(options =>
     {
         options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
@@ -50,7 +57,7 @@ if (app.Environment.IsProduction())
     app.MapGet("/version", () => CommonUtils.GetVersionString());
 
     app.UseForwardedHeaders();
-
+    app.UseHsts();
     app.UseMiddleware<TokenAuthMiddleware>();
     app.UseRequestDecompression();
     app.UseResponseCompression();
