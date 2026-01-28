@@ -1,8 +1,9 @@
 @using Aurorae.Models.Gallery
 @model FolderViewModel
 @{
-    ViewData["Title"] = $"图库 - {Model.DirectoryInfo.Name}";
-    ViewData["Header"] = Model.IsRoot ? "图库" : $"图库/{Model.ItemPath}";
+    const string Root = "图库";
+    ViewData["Title"] = $"{Root} - {Model.DirectoryInfo.Name}";
+    ViewData["Header"] = Model.IsRoot ? Root : $"{Root}/{Model.ItemPath}";
     var (prev, parent, next) = Model.GetNeighbors();
     var folders = Model.Folders.ToArray();
     var files = Model.Files.ToArray();
@@ -22,7 +23,7 @@
         @if (parent != null)
         {
             <a class="list-group-item list-group-item-action" href="/gallery/@parent.ItemPath">
-                <i class="bi bi-chevron-bar-up"></i> @(!parent.IsRoot ? parent.DirectoryInfo.Name : "图库")
+                <i class="bi bi-chevron-bar-up"></i> @(!parent.IsRoot ? parent.DirectoryInfo.Name : Root)
             </a>
         }
         @if (next != null)
