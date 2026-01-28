@@ -22,7 +22,7 @@ public class FileViewModel : ItemViewModel
         => IsImage ? "image"
           : IsText ? "text-left"
           : IsLink ? "link"
-                   : "file";
+                   : "file-earmark";
 
     public (FileViewModel? Prev, FolderViewModel? Parent, FileViewModel? Next) GetNeighbors()
     {

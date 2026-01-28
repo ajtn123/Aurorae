@@ -1,0 +1,85 @@
+@using Aurorae.Models.Gallery
+@model FolderViewModel
+@{
+    const string Root = "文档";
+    ViewData["Title"] = $"{Root} - {Model.DirectoryInfo.Name}";
+    ViewData["Header"] = Model.IsRoot ? Root : $"{Root}/{Model.ItemPath}";
+    var (prev, parent, next) = Model.GetNeighbors();
+    var folders = Model.Folders.ToArray();
+    var files = Model.Files.ToArray();
+}
+
+<h1>@ViewData["Header"]</h1>
+
+@if (!Model.IsRoot)
+{
+    <div class="folder-nav list-group list-group-horizontal-sm mb-2">
+        @if (prev != null)
+        {
+            <a class="list-group-item list-group-item-action" href="/doc/@prev.ItemPath">
+                <i class="bi bi-chevron-left"></i> @prev.DirectoryInfo.Name
+            </a>
+        }
+        @if (parent != null)
+        {
+            <a class="list-group-item list-group-item-action" href="/doc/@parent.ItemPath">
+                <i class="bi bi-chevron-bar-up"></i> @(!parent.IsRoot ? parent.DirectoryInfo.Name : Root)
+            </a>
+        }
+        @if (next != null)
+        {
+            <a class="list-group-item list-group-item-action" href="/doc/@next.ItemPath">
+                <i class="bi bi-chevron-right"></i> @next.DirectoryInfo.Name
+            </a>
+        }
+    </div>
+}
+
+<div class="btn-toolbar mb-2 gap-2">
+    <form method="get">
+        <div class="input-group">
+            <input type="checkbox" class="btn-check" name="recursive" checked
+                   value="true" id="recursive-btn" autocomplete="off" />
+            <label for="recursive-btn" class="btn btn-outline-warning rounded-start">递归</label>
+            <input type="search" class="form-control" name="filter" value="@Context.Request.Query["filter"]"
+                   placeholder="检索" />
+            <button type="submit" class="btn btn-outline-success"><i class="bi bi-search"></i></button>
+        </div>
+    </form>
+</div>
+
+@if (folders.Length != 0)
+{
+    <div class="card mb-2">
+        <div class="card-header border-0" role="button"
+             data-bs-toggle="collapse" href="#folder-list">
+            路径 @folders.Length
+        </div>
+        <div class="list-group list-group-flush border-top collapse show" id="folder-list">
+            @foreach (FolderViewModel folder in folders)
+            {
+                <a class="list-group-item list-group-item-action" href="/doc/@folder.ItemPath">
+                    <i class="bi bi-folder2"></i> @folder.DirectoryInfo.Name
+                </a>
+            }
+        </div>
+    </div>
+}
+
+@if (files.Length != 0)
+{
+    <div class="card mb-2">
+        <div class="card-header border-0" role="button"
+             data-bs-toggle="collapse" href="#file-list">
+            文件 @files.Length
+        </div>
+        <div class="list-group list-group-flush border-top collapse show" id="file-list">
+            @foreach (FileViewModel file in files)
+            {
+                <a class="list-group-item list-group-item-action" href="/doc/@file.ItemPath">
+                    <i class="bi bi-@file.IconName"></i> @file.FileInfo.Name
+                </a>
+            }
+        </div>
+    </div>
+}
