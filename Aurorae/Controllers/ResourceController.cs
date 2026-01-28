@@ -19,14 +19,7 @@ public class ResourceController : Controller
         if (!file.Exists)
             return NotFound();
 
-        var etag = GetEtag(file);
-
-        if (Request.Headers.IfNoneMatch.Contains(etag))
-            return StatusCode(StatusCodes.Status304NotModified);
-
-        Response.Headers.ETag = etag;
-
-        return File(file.OpenRead(), type);
+        return this.IfNoneMatch(file);
     }
 
     [HttpGet("/resources/text/{*name}")]
@@ -41,14 +34,7 @@ public class ResourceController : Controller
         if (!file.Exists)
             return NotFound();
 
-        var etag = GetEtag(file);
-
-        if (Request.Headers.IfNoneMatch.Contains(etag))
-            return StatusCode(StatusCodes.Status304NotModified);
-
-        Response.Headers.ETag = etag;
-
-        return Content(System.IO.File.ReadAllText(file.FullName), type);
+        return this.IfNoneMatch(file, file => Content(System.IO.File.ReadAllText(file.FullName), type));
     }
 
     private static readonly SemaphoreSlim thumbnailLock = new(1);
@@ -97,15 +83,7 @@ public class ResourceController : Controller
     }
 
     private IActionResult ServeThumbnail(Thumbnail thumbnail)
-    {
-        var etag = GetEtag(thumbnail);
-
-        if (Request.Headers.IfNoneMatch.Contains(etag))
-            return StatusCode(StatusCodes.Status304NotModified);
-
-        Response.Headers.ETag = etag;
-        return File(thumbnail.Data, thumbnail.MimeType);
-    }
+        => this.IfNoneMatch(thumbnail, thumbnail => File(thumbnail.Data, thumbnail.MimeType));
 
     [HttpGet("/resources/analyses/{*name}")]
     public async Task<IActionResult> Analyze(string name, [FromServices] FFProbeAdapter probe)
@@ -125,7 +103,5 @@ public class ResourceController : Controller
         return Content(analysis);
     }
 
-    public static string GetContentType(string fileName) => MimeMapping.MimeUtility.GetMimeMapping(fileName);
-    public static string GetEtag(FileInfo file) => $"{file.LastWriteTimeUtc.Ticks}-{file.Length}";
-    public static string GetEtag(Thumbnail thumbnail) => $"{thumbnail.CreatedAt.UtcTicks}-{thumbnail.Data.Length}-{thumbnail.Width}-{thumbnail.Height}";
+    public static string GetContentType(string name) => MimeMapping.MimeUtility.GetMimeMapping(name);
 }
