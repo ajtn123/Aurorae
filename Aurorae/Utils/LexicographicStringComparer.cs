@@ -126,17 +126,14 @@ public class LexicographicStringComparer : IComparer<string>
                 // char 48 is '0'
                 var cInt = (c - 48);
 
-                checked
+                long tmp = (result * 10L) + cInt;
+                if (tmp > int.MaxValue)
                 {
-                    long tmp = (result * 10L) + cInt;
-                    if (tmp > int.MaxValue)
-                    {
-                        overflows++;
-                        tmp %= int.MaxValue;
-                    }
-                    result = (int)tmp;
-                    chars++;
+                    overflows++;
+                    tmp %= int.MaxValue;
                 }
+                result = (int)tmp;
+                chars++;
 
                 if (cInt == 0 && countZeroes)
                 {
