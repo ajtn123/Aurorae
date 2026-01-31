@@ -97,3 +97,14 @@ h4 .badge, h5 .badge, h6 .badge {
     line-height: inherit;
     padding: 0 0.4em;
 }
+
+h1 {
+    background-image: url('data:image/svg+xml, \
+        <svg xmlns="http://www.w3.org/2000/svg" width="210" height="10" viewBox="0 0 21 1"> \
+            <rect x="0"  y="0" width="7" height="1" opacity="0.5" fill="pink"       /> \
+            <rect x="7"  y="0" width="7" height="1" opacity="0.5" fill="seashell"   /> \
+            <rect x="14" y="0" width="7" height="1" opacity="0.5" fill="powderblue" /> \
+        </svg>');
+    background-position: bottom left;
+    background-repeat: no-repeat;
+}
