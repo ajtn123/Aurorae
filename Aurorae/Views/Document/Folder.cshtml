@@ -3,13 +3,13 @@
 @{
     const string Root = "文档";
     ViewData["Title"] = $"{Root} - {Model.DirectoryInfo.Name}";
-    ViewData["Header"] = Model.IsRoot ? Root : $"{Root}/{Model.ItemPath}";
+    ViewData["Heading"] = Model.IsRoot ? Root : $"{Root}/{Model.ItemPath}";
     var (prev, parent, next) = Model.GetNeighbors();
     var folders = Model.Folders.ToArray();
     var files = Model.Files.ToArray();
 }
 
-<h1>@ViewData["Header"]</h1>
+<h1>@ViewData["Heading"]</h1>
 
 @if (!Model.IsRoot)
 {

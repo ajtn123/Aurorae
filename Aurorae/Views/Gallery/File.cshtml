@@ -8,7 +8,7 @@
 @model FileViewModel
 @{
     ViewData["Title"] = $"图库 - {Model.FileInfo.Name}";
-    ViewData["Header"] = $"图库/{Model.ItemPath}";
+    ViewData["Heading"] = $"图库/{Model.ItemPath}";
     var file = Model.FileInfo;
     var (prev, parent, next) = Model.GetNeighbors();
     var collect = Db.FileMetas.AsNoTracking().FirstOrDefault(x => x.FilePath == Model.ItemPath)?.Favorite;
@@ -20,7 +20,7 @@
     };
 }
 
-<h1>@ViewData["Header"]</h1>
+<h1>@ViewData["Heading"]</h1>
 
 <div class="file-nav list-group list-group-horizontal-sm mb-2">
     @if (prev != null)

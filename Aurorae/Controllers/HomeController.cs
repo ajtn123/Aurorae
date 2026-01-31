@@ -20,6 +20,9 @@ public class HomeController : Controller
         return View(new ErrorViewModel { StatusCode = code, RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
 
+    [HttpGet("/teapot")]
+    public IActionResult Teapot() => StatusCode(418);
+
     [HttpGet("/jump.php")]
     public IActionResult Jump()
     {
