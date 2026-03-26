@@ -63,9 +63,9 @@ public class LexicographicStringComparer : IComparer<string>
             if (char.IsWhiteSpace(cx) && !char.IsWhiteSpace(cy)) return -1;
             if (!char.IsWhiteSpace(cx) && char.IsWhiteSpace(cy)) return 1;
 
-            if (IsDigit(cx))
+            if (char.IsAsciiDigit(cx))
             {
-                if (!IsDigit(cy))
+                if (!char.IsAsciiDigit(cy))
                 {
                     return -1;
                 }
@@ -77,7 +77,7 @@ public class LexicographicStringComparer : IComparer<string>
                 // We might have looked at more than one char, e.g., "10" is 2 chars
                 i += numChars;
             }
-            else if (IsDigit(cy))
+            else if (char.IsAsciiDigit(cy))
             {
                 return 1;
             }
@@ -121,7 +121,7 @@ public class LexicographicStringComparer : IComparer<string>
         for (int j = offset; j < str.Length; j++)
         {
             char c = str[j];
-            if (IsDigit(c))
+            if (char.IsAsciiDigit(c))
             {
                 // char 48 is '0'
                 var cInt = (c - 48);
@@ -152,8 +152,6 @@ public class LexicographicStringComparer : IComparer<string>
 
         return new ParsedNumber(result, overflows, leadingZeroes, chars);
     }
-
-    private static bool IsDigit(char c) => (c >= '0' && c <= '9');
 
     /// <summary>
     /// Note that the ParsedNumber is not very useful as a number,
