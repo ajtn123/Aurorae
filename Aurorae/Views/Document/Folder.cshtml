@@ -35,7 +35,7 @@
     </div>
 }
 
-<div class="btn-toolbar mb-2 gap-2">
+<div class="btn-toolbar mb-2 gap-2 flex-wrap">
     <form method="get">
         <div class="input-group">
             <input type="checkbox" class="btn-check" name="recursive" checked
@@ -44,6 +44,28 @@
             <input type="search" class="form-control" name="filter" value="@Context.Request.Query["filter"]"
                    placeholder="检索" />
             <button type="submit" class="btn btn-outline-success"><i class="bi bi-search"></i></button>
+        </div>
+    </form>
+
+    <form method="post" enctype="multipart/form-data" asp-action="Upload" asp-route-path="@Model.ItemPath"
+          class="d-inline-flex gap-1 align-items-center" onsubmit="return confirm('确认上传所选文件？')">
+        <div class="input-group">
+            <input type="file" class="form-control form-control-sm" name="files" multiple required
+                   style="max-width: 200px;" />
+            <button type="submit" class="btn btn-outline-primary btn-sm">
+                <i class="bi bi-upload"></i> 上传
+            </button>
+        </div>
+    </form>
+
+    <form method="post" asp-action="CreateFolder" asp-route-path="@Model.ItemPath"
+          class="d-inline-flex gap-1 align-items-center" onsubmit="return confirm('确认创建文件夹？')">
+        <div class="input-group">
+            <input type="text" class="form-control form-control-sm" name="name" placeholder="文件夹名" required
+                   style="max-width: 160px;" />
+            <button type="submit" class="btn btn-outline-info btn-sm">
+                <i class="bi bi-folder-plus"></i> 新建文件夹
+            </button>
         </div>
     </form>
 </div>
