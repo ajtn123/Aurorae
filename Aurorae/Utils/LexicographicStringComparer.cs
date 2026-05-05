@@ -34,24 +34,23 @@
 /// </remarks>
 public class LexicographicStringComparer : IComparer<string>
 {
-
-#pragma warning disable CS8767 // 参数类型中引用类型的为 Null 性与隐式实现的成员不匹配(可能是由于为 Null 性特性)。
+#pragma warning disable CS8767
     public int Compare(string x, string y) => Comparison(x, y);
-#pragma warning restore CS8767 // 参数类型中引用类型的为 Null 性与隐式实现的成员不匹配(可能是由于为 Null 性特性)。
+#pragma warning restore CS8767
 
     /// <summary>
     /// A <see cref="Comparison{string}"/> delegate.
     /// </summary>
     public static int Comparison(string x, string y)
     {
-        // 1 = x > y, -1 = y > x, 0 = x == y
-        // Rules: Numbers < Letters, Space < everything
+        // -1: y > x; 0: x == y; 1: x > y 
+        // Numbers < letters; space < everything
         if (x == y) return 0;
 
-        // "" and null are the same for the purposes of this
+        // An empty string and null are the same for the purposes of this
         if (string.IsNullOrEmpty(x) && !string.IsNullOrEmpty(y)) return -1;
-        if (!string.IsNullOrEmpty(x) && string.IsNullOrEmpty(y)) return 1;
         if (string.IsNullOrEmpty(x) && string.IsNullOrEmpty(y)) return 0;
+        if (!string.IsNullOrEmpty(x) && string.IsNullOrEmpty(y)) return 1;
 
         var yl = y.Length;
         for (int i = 0; i < x.Length; i++)
@@ -70,8 +69,8 @@ public class LexicographicStringComparer : IComparer<string>
                     return -1;
                 }
 
-                // Both are digits, but now we need to look at them as a whole, since
-                // 10 > 2, but 10 > 002 > 02 > 2
+                // Both are digits, but now we need to look at them as a whole,
+                // since 10 > 2, but 10 > 002 > 02 > 2
                 var numCmp = CompareNumbers(x, y, i, out int numChars);
                 if (numCmp != 0) return numCmp;
                 // We might have looked at more than one char, e.g., "10" is 2 chars
@@ -83,10 +82,8 @@ public class LexicographicStringComparer : IComparer<string>
             }
             else
             {
-                // Do this after the digit check
-                // Case insensitive
-                // Normalize to Uppercase:
-                // https://docs.microsoft.com/en-US/visualstudio/code-quality/ca1308-normalize-strings-to-uppercase
+                // Case insensitive (normalize to uppercase)
+                // https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca1308
                 var cmp = char.ToUpper(cx).CompareTo(char.ToUpper(cy));
                 if (cmp != 0) return cmp;
             }
