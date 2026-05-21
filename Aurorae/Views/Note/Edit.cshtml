@@ -1,0 +1,28 @@
+@using Aurorae.Models.DbModels
+@model Note
+@{
+    var isNew = Model.Id == 0;
+    ViewData["Title"] = isNew ? "新建笔记" : $"编辑笔记 - {Model.Title}";
+    ViewData["Heading"] = isNew ? "笔记/新建" : $"笔记/{Model.Title}/编辑";
+}
+
+<h1>@ViewData["Heading"]</h1>
+
+<form method="post" action="@(isNew ? "/notes" : $"/notes/{Model.Id}")" class="mb-2">
+    <div class="mb-2">
+        <label for="title" class="form-label">标题</label>
+        <input type="text" class="form-control" id="title" name="Title" value="@Model.Title" required placeholder="笔记标题" />
+    </div>
+    <div class="mb-2">
+        <label for="content" class="form-label">内容</label>
+        <textarea class="form-control font-monospace" id="content" name="Content" rows="20" required placeholder="在此输入 Markdown 内容...">@Model.Content</textarea>
+    </div>
+    <div class="btn-toolbar mb-2 gap-2">
+        <button type="submit" class="btn btn-primary">
+            <i class="bi bi-check-lg"></i> 保存
+        </button>
+        <a class="btn btn-outline-secondary" href="@(isNew ? "/notes" : $"/notes/{Model.Id}")">
+            取消
+        </a>
+    </div>
+</form>

@@ -45,8 +45,7 @@
 
 <div class="btn-toolbar mb-2 gap-2">
     <form>
-        <input type="checkbox" class="btn-check" name="collect" checked="@collect"
-               value="true" id="collect-btn" autocomplete="off" onchange="send(this.form)">
+        <input type="checkbox" class="btn-check" name="collect" checked="@collect" value="true" id="collect-btn" autocomplete="off" onchange="send(this.form)">
         <label for="collect-btn" class="btn btn-outline-warning">收藏</label>
     </form>
     @if (Model.IsImage)
@@ -78,7 +77,7 @@
                 }
                 <a href="https://www.pixiv.net/users/@illust.UserId"><span class="badge text-bg-warning">@illust.UserName</span></a>
                 <span class="badge text-bg-secondary">@source.Index / @illust.PageCount</span>
-                <span class="badge text-bg-secondary">@illust.CreateAt.ToString("f")</span>
+                <span class="badge text-bg-secondary">@illust.CreateAt.ToLocalString()</span>
                 <span class="badge text-bg-secondary">@illust.CreateAt.Humanize()</span>
                 foreach (string tag in illust.Tags ?? [])
                 {
@@ -120,10 +119,10 @@
     <script>window.ItemPath = @Json.Serialize(Model.ItemPath)</script>
     <script>
         function send(form) {
-            const url = '/gallery/collect';
-            const data = new FormData(form);
-            data.set('name', window.ItemPath);
-            fetch(url, { method: 'POST', body: data }).catch(e => console.error(e));
+        const url = '/gallery/collect';
+        const data = new FormData(form);
+        data.set('name', window.ItemPath);
+        fetch(url, { method: 'POST', body: data }).catch(e => console.error(e));
         }
     </script>
     @if (Model.IsImage)
@@ -135,8 +134,8 @@
     {
         <script>
             fetch(`/resources/text/${window.ItemPath}`)
-                .then(r => r.text())
-                .then(t => document.getElementById('text').innerText = t);
+            .then(r => r.text())
+            .then(t => document.getElementById('text').innerText = t);
         </script>
     }
 }

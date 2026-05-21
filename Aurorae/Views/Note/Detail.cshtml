@@ -1,0 +1,37 @@
+@using Aurorae.Models.DbModels
+@model Note
+@{
+    ViewData["Title"] = $"笔记 - {Model.Title}";
+    ViewData["Heading"] = $"笔记/{Model.Title}";
+}
+
+<h1>@ViewData["Heading"]</h1>
+
+<p class="mb-2">
+    <span class="badge text-bg-primary">@Model.CreatedAt.ToLocalString()</span>
+    <span class="badge text-bg-secondary">@Model.UpdatedAt.ToLocalString()</span>
+</p>
+
+<div class="btn-toolbar mb-2 gap-2">
+    <a class="btn btn-outline-secondary" href="/notes">
+        <i class="bi bi-arrow-left"></i> 返回列表
+    </a>
+    <a class="btn btn-outline-secondary" href="/notes/@Model.Id/edit">
+        <i class="bi bi-pencil"></i> 编辑
+    </a>
+    <form method="post" action="/notes/@Model.Id/delete" onsubmit="return confirm('确认删除笔记「@Model.Title」？')">
+        <button type="submit" class="btn btn-outline-danger">
+            <i class="bi bi-trash"></i> 删除
+        </button>
+    </form>
+</div>
+
+<div class="markdown-body mb-2" id="markdown-content"></div>
+
+@section Scripts {
+    <script src="~/lib/marked/marked.min.js"></script>
+    <script>
+        const md = window.marked.parse(@Json.Serialize(Model.Content));
+        document.getElementById('markdown-content').innerHTML = md;
+    </script>
+}

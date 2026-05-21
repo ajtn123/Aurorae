@@ -25,6 +25,13 @@
       "files": [
         "medium-zoom.min.js"
       ]
+    },
+    {
+      "library": "marked@15.0.12",
+      "destination": "wwwroot/lib/marked/",
+      "files": [
+        "marked.min.js"
+      ]
     }
   ]
 }

@@ -9,6 +9,7 @@ public class AuroraeDb(DbContextOptions<AuroraeDb> options) : DbContext(options)
     public DbSet<Thumbnail> Thumbnails { get; set; }
     public DbSet<FileMeta> FileMetas { get; set; }
     public DbSet<PixivIllustInfo> PixivIllustInfos { get; set; }
+    public DbSet<Note> Notes { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -18,5 +19,7 @@ public class AuroraeDb(DbContextOptions<AuroraeDb> options) : DbContext(options)
         {
             entity.Property(t => t.Favorite).HasDefaultValue(false);
         });
+
+        modelBuilder.Entity<Note>().HasIndex(n => n.CreatedAt).IsDescending();
     }
 }
