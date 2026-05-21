@@ -22,6 +22,4 @@ public static partial class CommonUtils
 
         return null;
     }
-
-    public static string ToLocalString(this DateTimeOffset time, string format = "f") => time.ToLocalTime().ToString(format);
 }
