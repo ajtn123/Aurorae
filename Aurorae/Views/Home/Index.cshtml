@@ -48,7 +48,7 @@
         setInterval(updateDatetime, 1000);
 
         function loadMore(btn) {
-            fetch(`/gallery/random`)
+            fetch(`/gallery/random/card`)
                 .then(r => r.text())
                 .then(html => {
                     btn.insertAdjacentHTML('beforebegin', html);

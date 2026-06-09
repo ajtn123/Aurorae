@@ -1,3 +1,4 @@
+using System.Net;
 using Aurorae.Models.Gallery;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -31,17 +32,26 @@ public class GalleryController(AuroraeDb db) : Controller
     }
 
     [HttpGet("/gallery/random")]
-    public IActionResult GetRandomItems([FromQuery] int count = 100)
+    public IActionResult GetRandomItem()
+    {
+        var item = RandomItems(db, 1).First();
+        var path = string.Join('/', item.ItemPath.Split('/').Select(Uri.EscapeDataString));
+        return Redirect($"/gallery/{path}");
+    }
+
+    [HttpGet("/gallery/random/card")]
+    public IActionResult GetRandomItemCards([FromQuery] int count = 100)
     {
         return PartialView("_CardList", RandomItems(db, count).Select(x => ("_ThumbnailCard", (object)x)));
     }
 
     public static IEnumerable<FileViewModel> RandomItems(AuroraeDb db, int count) => db.FileMetas
+        .AsNoTracking()
         .OrderBy(x => EF.Functions.Random())
+        .Take(count)
         .AsEnumerable()
         .Select(x => new FileViewModel(Path.Combine(LocalPath.Gallery, x.FilePath)))
-        .Where(x => x.IsImage)
-        .Take(count);
+        .Where(x => x.IsImage);
 
     [HttpPost("/gallery/collect")]
     public async Task<IActionResult> CollectItem([FromForm] string name, [FromForm] bool collect)
