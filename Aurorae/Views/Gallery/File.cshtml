@@ -94,10 +94,11 @@
     }
 </p>
 
-@if (Model.IsImage)
+@if (Model.IsImage && Model.IsSupported)
 {
     <img src="/resources/images/@Model.ItemPath" id="image" class="zoomable mb-2" />
 }
+
 @if (Model.IsText)
 {
     <div id="text" class="mb-2"></div>

@@ -18,6 +18,7 @@ public class FileViewModel : ItemViewModel
     public bool IsImage => ContentType.StartsWith("image");
     public bool IsText => ContentType.StartsWith("text");
     public bool IsLink => FileInfo.Extension.Equals(".url", StringComparison.OrdinalIgnoreCase);
+    public bool IsSupported => !NotSupportedTypes.Contains(ContentType);
     public string IconName
         => IsImage ? "image"
           : IsText ? "text-left"
@@ -40,4 +41,6 @@ public class FileViewModel : ItemViewModel
             next = new(peers[selfIndex + 1]);
         return (prev, parent, next);
     }
+
+    private static readonly string[] NotSupportedTypes = ["image/vnd.adobe.photoshop"];
 }
