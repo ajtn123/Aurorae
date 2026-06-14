@@ -19,6 +19,7 @@ public class ItemViewModel
 
     public ItemLocation Location { get; }
     public string ItemPath { get; }
+    public string ItemPathEncoded => CommonUtils.EncodePath(ItemPath);
 
     public enum ItemLocation { Unknown, Gallery, Document }
 }

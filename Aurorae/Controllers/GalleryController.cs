@@ -34,9 +34,7 @@ public class GalleryController(AuroraeDb db) : Controller
     [HttpGet("/gallery/random")]
     public IActionResult GetRandomItem()
     {
-        var item = RandomItems(db, 1).First();
-        var path = string.Join('/', item.ItemPath.Split('/').Select(Uri.EscapeDataString));
-        return Redirect($"/gallery/{path}");
+        return Redirect($"/gallery/{RandomItems(db, 1).First().ItemPathEncoded}");
     }
 
     [HttpGet("/gallery/random/card")]

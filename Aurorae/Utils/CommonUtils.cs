@@ -22,4 +22,6 @@ public static partial class CommonUtils
 
         return null;
     }
+
+    public static string EncodePath(string path) => string.Join('/', path.Split('/').Select(Uri.EscapeDataString));
 }
