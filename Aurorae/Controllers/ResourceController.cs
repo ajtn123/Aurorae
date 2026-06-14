@@ -56,7 +56,7 @@ public class ResourceController : Controller
         if (file.Length <= 1 << 16)
             return GetImage(name);
 
-        var thumbnail = await SearchThumbnail(db, name, width, height) ?? await GenerateThumbnail(db, generator, file, name, width, height);
+        var thumbnail = await GenerateThumbnail(db, generator, file, name, width, height);
 
         return this.IfNoneMatch(thumbnail, thumbnail => File(thumbnail.Data, thumbnail.MimeType));
     }
