@@ -46,7 +46,9 @@ public class ResourceController : Controller
         [FromQuery] int width = -1,
         [FromQuery] int height = 480)
     {
-        if (string.IsNullOrWhiteSpace(name) || !GetContentType(name).StartsWith("image"))
+        if (string.IsNullOrWhiteSpace(name) ||
+            GetContentType(name) is not { } type ||
+            !type.StartsWith("image"))
             return NotFound();
 
         var file = new FileInfo(Path.Combine(LocalPath.Gallery, name));
@@ -55,29 +57,28 @@ public class ResourceController : Controller
         if (file.Length <= 1 << 16)
             return GetImage(name);
 
-        if (await db.Thumbnails.AsNoTracking().FirstOrDefaultAsync(t => t.FilePath == name && t.Width == width && t.Height == height) is { } thumbnail)
-            return ServeThumbnail(thumbnail);
+        if (await db.Thumbnails.AsNoTracking().FirstOrDefaultAsync(t => t.FilePath == name && t.Width == width && t.Height == height) is { } tn1)
+            return ServeThumbnail(tn1);
 
         await thumbnailLock.WaitAsync();
         try
         {
-            if (await db.Thumbnails.AsNoTracking().FirstOrDefaultAsync(t => t.FilePath == name && t.Width == width && t.Height == height) is { } thumbnail)
-                return ServeThumbnail(thumbnail);
+            if (await db.Thumbnails.AsNoTracking().FirstOrDefaultAsync(t => t.FilePath == name && t.Width == width && t.Height == height) is { } tn2)
+                return ServeThumbnail(tn2);
 
-            var data = await thumbnailGenerator.GenerateAsync(file.FullName, width, height);
-            thumbnail = new Thumbnail
+            var tn3 = new Thumbnail
             {
                 FilePath = name,
-                Data = data,
+                Data = await thumbnailGenerator.GenerateAsync(file.FullName, width, height),
                 Width = width,
                 Height = height,
                 MimeType = thumbnailGenerator.ContentType,
             };
 
-            db.Thumbnails.Add(thumbnail);
+            db.Thumbnails.Add(tn3);
             await db.SaveChangesAsync();
 
-            return ServeThumbnail(thumbnail);
+            return ServeThumbnail(tn3);
         }
         finally
         {
