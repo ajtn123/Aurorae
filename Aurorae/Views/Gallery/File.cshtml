@@ -126,10 +126,10 @@
         fetch(url, { method: 'POST', body: data }).catch(e => console.error(e));
         }
     </script>
-    @if (Model.IsImage)
+    @if (Model.IsImage && Model.IsSupported)
     {
         <script src="~/lib/medium-zoom/medium-zoom.min.js"></script>
-        <script>mediumZoom('.zoomable')</script>
+        <script>mediumZoom('.zoomable').on('open', event => { hideNavbar(); })</script>
     }
     @if (Model.IsText)
     {

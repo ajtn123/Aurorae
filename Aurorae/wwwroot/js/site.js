@@ -1,9 +1,9 @@
 ﻿/*
  * bootstrap-auto-dark-mode (modified)
  *
- * Author and copyright: Stefan Haack (https://shaack.com)
- * Repository: https://github.com/shaack/bootstrap-auto-dark-mode)
- * License: MIT, see file 'LICENSE'
+ * Source - https://github.com/shaack/bootstrap-auto-dark-mode
+ * Author and copyright - Stefan Haack (https://shaack.com)
+ * License - MIT
  */
 
 const htmlElement = document.querySelector('html');
@@ -21,7 +21,7 @@ updateTheme();
  * hide bootstrap navbar when scrolling (modified)
  *
  * Source - https://stackoverflow.com/a/45935816
- * Posted by Tomer Shay, modified by community. See post 'Timeline' for change history
+ * Posted by Tomer Shay, modified by community
  * Retrieved 2026-01-16, License - CC BY-SA 3.0
  */
 
@@ -32,13 +32,15 @@ let lastScrollTop = 0;
 window.addEventListener("scroll", function () {
     const currScrollTop = window.pageYOffset || document.documentElement.scrollTop;
 
-    if (currScrollTop < bannerHeight) {
-        nav.style.transform = "translateY(0)";
-    } else if (currScrollTop > lastScrollTop) {
-        nav.style.transform = "translateY(-150%)";
-    } else {
-        nav.style.transform = "translateY(0)";
-    }
+    if (currScrollTop < bannerHeight)
+        showNavbar();
+    else if (currScrollTop > lastScrollTop)
+        hideNavbar();
+    else
+        showNavbar();
 
     lastScrollTop = currScrollTop;
 });
+
+function showNavbar() { nav.style.transform = "translateY(0)"; }
+function hideNavbar() { nav.style.transform = "translateY(-150%)"; }
