@@ -37,12 +37,11 @@ public class ResourceController : Controller
         return this.IfNoneMatch(file, file => Content(System.IO.File.ReadAllText(file.FullName), type));
     }
 
-    private static readonly SemaphoreSlim thumbnailLock = new(1);
     [HttpGet("/resources/thumbnails/{*name}")]
     public async Task<IActionResult> GetThumbnail(
         [FromRoute] string name,
         [FromServices] AuroraeDb db,
-        [FromServices] IThumbnailGenerator thumbnailGenerator,
+        [FromServices] IThumbnailGenerator generator,
         [FromQuery] int width = -1,
         [FromQuery] int height = 480)
     {
@@ -57,37 +56,45 @@ public class ResourceController : Controller
         if (file.Length <= 1 << 16)
             return GetImage(name);
 
-        if (await db.Thumbnails.AsNoTracking().FirstOrDefaultAsync(t => t.FilePath == name && t.Width == width && t.Height == height) is { } tn1)
-            return ServeThumbnail(tn1);
+        var thumbnail = await SearchThumbnail(db, name, width, height) ?? await GenerateThumbnail(db, generator, file, name, width, height);
 
-        await thumbnailLock.WaitAsync();
+        return this.IfNoneMatch(thumbnail, thumbnail => File(thumbnail.Data, thumbnail.MimeType));
+    }
+
+    private static Task<Thumbnail?> SearchThumbnail(AuroraeDb db, string name, int width, int height)
+    {
+        return db.Thumbnails.AsNoTracking().FirstOrDefaultAsync(t => t.FilePath == name && t.Width == width && t.Height == height);
+    }
+
+    private static readonly SemaphoreSlim thumbnailGenerationSemaphore = new(1);
+
+    private static async Task<Thumbnail> GenerateThumbnail(AuroraeDb db, IThumbnailGenerator generator, FileInfo file, string name, int width, int height)
+    {
+        await thumbnailGenerationSemaphore.WaitAsync();
         try
         {
-            if (await db.Thumbnails.AsNoTracking().FirstOrDefaultAsync(t => t.FilePath == name && t.Width == width && t.Height == height) is { } tn2)
-                return ServeThumbnail(tn2);
+            if (await SearchThumbnail(db, name, width, height) is { } thumbnail)
+                return thumbnail;
 
-            var tn3 = new Thumbnail
+            thumbnail = new Thumbnail
             {
                 FilePath = name,
-                Data = await thumbnailGenerator.GenerateAsync(file.FullName, width, height),
+                Data = await generator.GenerateAsync(file.FullName, width, height),
                 Width = width,
                 Height = height,
-                MimeType = thumbnailGenerator.ContentType,
+                MimeType = generator.ContentType,
             };
 
-            db.Thumbnails.Add(tn3);
+            db.Thumbnails.Add(thumbnail);
             await db.SaveChangesAsync();
 
-            return ServeThumbnail(tn3);
+            return thumbnail;
         }
         finally
         {
-            thumbnailLock.Release();
+            thumbnailGenerationSemaphore.Release();
         }
     }
-
-    private IActionResult ServeThumbnail(Thumbnail thumbnail)
-        => this.IfNoneMatch(thumbnail, thumbnail => File(thumbnail.Data, thumbnail.MimeType));
 
     [HttpGet("/resources/analyses/{*name}")]
     public async Task<IActionResult> Analyze(string name, [FromServices] FFProbeAdapter probe)
