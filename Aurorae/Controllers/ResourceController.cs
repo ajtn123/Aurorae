@@ -55,6 +55,9 @@ public class ResourceController : Controller
         if (file.Length <= 1 << 16)
             return GetImage(name);
 
+        if (await db.Thumbnails.AsNoTracking().FirstOrDefaultAsync(t => t.FilePath == name && t.Width == width && t.Height == height) is { } thumbnail)
+            return ServeThumbnail(thumbnail);
+
         await thumbnailLock.WaitAsync();
         try
         {
