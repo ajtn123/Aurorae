@@ -14,7 +14,7 @@ public static class FastfetchAdapter
         CreateNoWindow = true,
     };
 
-    private static (DateTime Time, string Output) last = (DateTime.MinValue, "Not Initialize Yet");
+    private static (DateTime Time, string Output) last = (DateTime.MinValue, "Not Initialized Yet");
     private static readonly TimeSpan CacheDuration = TimeSpan.FromHours(1);
 
     public static async Task<string> GetFastfetchOutput()

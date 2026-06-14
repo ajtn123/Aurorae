@@ -3,6 +3,7 @@
 public sealed class FileSyncWorker : BackgroundService
 {
     private readonly IServiceScopeFactory factory;
+    private readonly ILogger<FileSyncWorker> logger;
     private readonly FileSystemWatcher watcher = new()
     {
         Path = LocalPath.Gallery,
@@ -10,27 +11,34 @@ public sealed class FileSyncWorker : BackgroundService
         NotifyFilter = NotifyFilters.FileName | NotifyFilters.DirectoryName,
     };
 
-    public FileSyncWorker(IServiceScopeFactory factory)
+    public FileSyncWorker(IServiceScopeFactory factory, ILogger<FileSyncWorker> logger)
     {
         this.factory = factory;
-        watcher.Created += async (s, e) => _ = RequestSyncAsync();
-        watcher.Deleted += async (s, e) => _ = RequestSyncAsync();
-        watcher.Renamed += async (s, e) => _ = RequestSyncAsync();
-        // watcher.Changed += async (s, e) => _ = await RequestSyncAsync();
-        // watcher.Error += async (s, e) => _ = await RequestSyncAsync();
+        this.logger = logger;
+
+        watcher.Created += (s, e) => _ = RequestSyncAsync();
+        watcher.Deleted += (s, e) => _ = RequestSyncAsync();
+        watcher.Renamed += (s, e) => _ = RequestSyncAsync();
+        watcher.Error += (s, e) => logger.LogError(e.GetException(), "FileSystemWatcher Error");
     }
 
-    private CancellationTokenSource? debounce;
+    private readonly Lock debounceLock = new();
+    private CancellationTokenSource debounce = new();
     private readonly SemaphoreSlim semaphore = new(1);
+
     public async Task RequestSyncAsync()
     {
-        debounce?.Cancel();
-        debounce?.Dispose();
-        debounce = new();
+        CancellationTokenSource captured;
+        lock (debounceLock)
+        {
+            debounce.Cancel();
+            debounce.Dispose();
+            captured = debounce = new();
+        }
 
         try
         {
-            await Task.Delay(TimeSpan.FromSeconds(10), debounce.Token);
+            await Task.Delay(TimeSpan.FromSeconds(10), captured.Token);
         }
         catch (TaskCanceledException)
         {
@@ -45,6 +53,10 @@ public sealed class FileSyncWorker : BackgroundService
             using var scope = factory.CreateScope();
             var service = scope.ServiceProvider.GetRequiredService<FileSyncService>();
             await service.SyncAsync(watcher.Path);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "FileSyncService Error");
         }
         finally
         {
@@ -65,7 +77,7 @@ public sealed class FileSyncWorker : BackgroundService
     {
         watcher.EnableRaisingEvents = false;
         watcher.Dispose();
-        debounce?.Dispose();
+        debounce.Dispose();
         semaphore.Dispose();
         base.Dispose();
     }
