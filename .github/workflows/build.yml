@@ -1,23 +1,12 @@
 name: Test & Build
 
-on:
-  push:
-    branches:
-      - 'main'
-  pull_request:
-    branches:
-      - 'main'
+on: push
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout source
-        uses: actions/checkout@v6
-
-      # - name: Test
-      #   run: dotnet test -c Release --filter "TestCategory!=LargeData"
+      - uses: actions/checkout@v6
 
       - name: Build
         run: dotnet build Aurorae -c Release
