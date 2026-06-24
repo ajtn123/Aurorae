@@ -4,13 +4,11 @@ using Aurorae.Interfaces;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using NReco.Logging.File;
-using Scighost.PixivApi;
 using System.Globalization;
 
 var culture = new CultureInfo("zh-CN");
 CultureInfo.DefaultThreadCurrentCulture = culture;
 CultureInfo.DefaultThreadCurrentUICulture = culture;
-_ = FastfetchAdapter.GetFastfetchOutput();
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,8 +16,8 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<AuroraeDb>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("AuroraeDBConnection")));
 builder.Services.AddSingleton<IThumbnailGenerator, AvifThumbnailGenerator>();
 builder.Services.AddSingleton<ImageSourceProvider>();
-builder.Services.AddSingleton<PixivClient>(services => new(httpProxy: LocalPath.HttpProxy));
-builder.Services.AddScoped<PixivAdapter>();
+// builder.Services.AddSingleton<PixivClient>();
+// builder.Services.AddScoped<PixivAdapter>();
 builder.Services.AddSingleton<FFProbeAdapter>();
 
 if (builder.Environment.IsProduction())

@@ -3,7 +3,7 @@
 @using Humanizer
 @using Microsoft.EntityFrameworkCore
 @inject ImageSourceProvider ImageSourceProvider
-@inject PixivAdapter Pixiv
+@* @inject PixivAdapter Pixiv *@
 @inject AuroraeDb Db
 @model FileViewModel
 @{
@@ -12,12 +12,14 @@
     var file = Model.FileInfo;
     var (prev, parent, next) = Model.GetNeighbors();
     var collect = Db.FileMetas.AsNoTracking().FirstOrDefault(x => x.FilePath == Model.ItemPath)?.Favorite;
-    var source = ImageSourceProvider.GetSource(Model.FileInfo);
+    dynamic? source = null;
+    dynamic? info = null;
+    @* var source = ImageSourceProvider.GetSource(Model.FileInfo);
     var info = source?.Name switch
     {
         "Pixiv" => await Pixiv.GetPixivIllustInfoAsync(source.Pid),
         _ => null
-    };
+    }; *@
 }
 
 <h1>@ViewData["Heading"]</h1>

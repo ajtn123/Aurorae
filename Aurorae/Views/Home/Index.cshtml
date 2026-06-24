@@ -27,19 +27,6 @@
 
 <h1 class="display-4">@ViewData["Title"]</h1>
 
-<div class="modules d-flex flex-wrap gap-2 mb-2">
-    <div class="module card flex-grow-1">
-        <div class="card-body">
-            <pre id="datetime" class="m-0"></pre>
-        </div>
-    </div>
-    <div class="module card flex-grow-1">
-        <div class="card-body">
-            <pre id="system-info" class="m-0">@await FastfetchAdapter.GetFastfetchOutput()</pre>
-        </div>
-    </div>
-</div>
-
 <div class="d-flex gap-2 mb-2" id="thumbnails">
     @await Html.PartialAsync("_CardList", Aurorae.Controllers.GalleryController.RandomItems(db, (int)ViewBag.Images).Select(x => ("_ThumbnailCard", (object)x)))
     <button type="button" onclick="loadMore(this)" class="btn btn-outline-primary flex-grow-1 align-content-center justify-content-center flex-wrap text-decoration-none">更多</button>
@@ -47,26 +34,6 @@
 
 @section Scripts {
     <script>
-        const datetime = document.getElementById('datetime');
-        function updateDatetime() {
-            const dt = new Date();
-            datetime.textContent = JSON.stringify({
-                full: dt.toLocaleString(),
-                UTC: dt.toJSON(),
-                timestamp: dt.valueOf(),
-                year: dt.getFullYear(),
-                month: dt.getMonth() + 1,
-                date: dt.getDate(),
-                day: dt.getDay(),
-                hour: dt.getHours(),
-                minute: dt.getMinutes(),
-                second: dt.getSeconds()
-            }, null, 2);
-        }
-
-        updateDatetime();
-        setInterval(updateDatetime, 1000);
-
         function loadMore(btn) {
             fetch(`/gallery/random/card`)
                 .then(r => r.text())
