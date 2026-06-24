@@ -4,9 +4,9 @@ using FFMpegCore.Enums;
 
 namespace Aurorae.Services;
 
-public class AvifThumbnailGenerator() : IThumbnailGenerator
+public class AvifThumbnailGenerator(ILogger<AvifThumbnailGenerator> logger) : IThumbnailGenerator
 {
-    public async Task<byte[]> GenerateAsync(string filePath, int width, int height)
+    public async Task<byte[]?> GenerateAsync(string filePath, int width, int height)
     {
         var temp = Path.GetTempFileName() + ".avif";
         try
@@ -22,6 +22,11 @@ public class AvifThumbnailGenerator() : IThumbnailGenerator
                     .ForceFormat("avif"))
                 .ProcessAsynchronously();
             return await File.ReadAllBytesAsync(temp);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "GenerateAsync(file: {file}, width: {width}, height: {height})", filePath, width, height);
+            return null;
         }
         finally
         {

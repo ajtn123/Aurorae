@@ -56,9 +56,15 @@ public class ResourceController : Controller
         if (file.Length <= 1 << 16)
             return GetImage(name);
 
-        var thumbnail = await GenerateThumbnail(db, generator, file, name, width, height);
-
-        return this.IfNoneMatch(thumbnail, thumbnail => File(thumbnail.Data, thumbnail.MimeType));
+        try
+        {
+            var thumbnail = await GenerateThumbnail(db, generator, file, name, width, height);
+            return this.IfNoneMatch(thumbnail, thumbnail => File(thumbnail.Data, thumbnail.MimeType));
+        }
+        catch
+        {
+            return NotFound();
+        }
     }
 
     private static Task<Thumbnail?> SearchThumbnail(AuroraeDb db, string name, int width, int height)
@@ -79,7 +85,7 @@ public class ResourceController : Controller
             thumbnail = new Thumbnail
             {
                 FilePath = name,
-                Data = await generator.GenerateAsync(file.FullName, width, height),
+                Data = await generator.GenerateAsync(file.FullName, width, height) ?? throw new Exception(),
                 Width = width,
                 Height = height,
                 MimeType = generator.ContentType,

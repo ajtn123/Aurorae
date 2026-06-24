@@ -2,6 +2,6 @@
 
 public interface IThumbnailGenerator
 {
-    Task<byte[]> GenerateAsync(string filePath, int width, int height);
+    Task<byte[]?> GenerateAsync(string filePath, int width, int height);
     string ContentType { get; }
 }
