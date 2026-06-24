@@ -9,9 +9,7 @@ public class NoteController(AuroraeDb db) : Controller
     [HttpGet("/notes")]
     public async Task<IActionResult> Index([FromQuery] string? filter = null)
     {
-        var query = db.Notes
-            .AsNoTracking()
-            .AsQueryable();
+        var query = db.Notes.AsNoTracking();
 
         if (!string.IsNullOrEmpty(filter))
             query = query.Where(n => EF.Functions.Like(n.Title, $"%{filter}%") || EF.Functions.Like(n.Content, $"%{filter}%"));

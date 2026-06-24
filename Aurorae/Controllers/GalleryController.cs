@@ -46,7 +46,7 @@ public class GalleryController(AuroraeDb db) : Controller
     public static IEnumerable<FileViewModel> RandomItems(AuroraeDb db, int count) => db.FileMetas
         .AsNoTracking()
         .OrderBy(x => EF.Functions.Random())
-        .Take(Math.Max(count * 2, 10))
+        .Take(Math.Max(count * 2, 100))
         .AsEnumerable()
         .Select(x => new FileViewModel(Path.Combine(LocalPath.Gallery, x.FilePath)))
         .Where(x => x.IsImage && x.IsSupported)

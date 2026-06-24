@@ -51,7 +51,6 @@ var app = builder.Build();
 
 if (app.Environment.IsProduction())
 {
-    app.UseExceptionObserver();
     app.UseExceptionHandler("/error");
     app.UseStatusCodePagesWithReExecute("/error", "?code={0}");
     app.MapGet("/log", (IConfiguration config) => File.ReadAllTextAsync(config["Logging:File:Path"]!));
@@ -65,13 +64,7 @@ if (app.Environment.IsProduction())
 }
 
 app.UseRouting();
-
 app.MapStaticAssets();
-
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}")
-    .WithStaticAssets();
-
+app.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}").WithStaticAssets();
 
 app.Run();
